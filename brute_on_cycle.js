@@ -1,7 +1,9 @@
 
 const allowedChars = ['q','w','e','r','t','y','u','i','o','p','Q','W','E','R','T','Y','U','I','O','P'];
 
-const myPassword = 'QwErQ'
+const myPassword = 'YrwRW' // пароль который будем подбирать
+
+const lengthPassword = 7 // максимальная длина пароля
 
 const lengthAllowedChars = allowedChars.length
 function createMask(length = 1) {
@@ -91,4 +93,4 @@ function brute(endLength = 5) {
     }
 }
 
-console.log(brute(myPassword.length))
+console.log(brute(lengthPassword))
