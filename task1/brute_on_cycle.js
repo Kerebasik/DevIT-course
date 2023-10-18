@@ -1,7 +1,7 @@
 
 const allowedChars = ['q','w','e','r','t','y','u','i','o','p','Q','W','E','R','T','Y','U','I','O','P'];
 
-const myPassword = 'YrwRW' // пароль который будем подбирать
+const myPassword = 'tyQWeE' // пароль который будем подбирать
 
 const lengthPassword = 7 // максимальная длина пароля
 
@@ -74,21 +74,17 @@ function canIncrementIndexes(indexes) {
 }
 
 function brute(endLength = 5) {
-    let indexes = createMask();
-    let password = generatePassword(indexes);
+    let indexes;
+    let password;
 
     for(let i = 1; i <= endLength; i++){
         indexes = createMask(i)
-        while (true){
+        while (canIncrementIndexes(indexes)){
             password = generatePassword(indexes)
             if(login(password)){
                 return `Password is found: ${generatePassword(indexes)}`
             }
-            if(!canIncrementIndexes(indexes)){
-                break;
-            } else {
-                indexes = incrementIndexes(indexes)
-            }
+            indexes = incrementIndexes(indexes)
         }
     }
 }
