@@ -72,9 +72,9 @@ class Queue {
             В блоке finally деинкрементирую счетчик задачь и проверяю статус running для продолжения работы очереди
              */
 
-            new Promise((resolve, reject) => {
+            new Promise(async (resolve, reject) => {
                 try {
-                    task()
+                    await task()
                     resolve()
                 } catch (e) {
                     reject(e)
