@@ -3,17 +3,10 @@ const allowedChars = ['q','w','e','r','t','y','u','i','o','p','Q','W','E','R','T
 
 const myPassword = 'tyQWeE' // пароль который будем подбирать
 
-const lengthPassword = 7 // максимальная длина пароля
-
 const lengthAllowedChars = allowedChars.length
+
 function createMask(length = 1) {
-    const mask=[]
-
-    for (let i = 0; i<length; i++){
-        mask.push(0)
-    }
-
-    return mask
+    return new Array(length).fill(0);
 }
 
 function generatePassword(indexes) {
@@ -22,6 +15,10 @@ function generatePassword(indexes) {
     }
 
     let password = ''
+
+    /*
+    Прохожусь по массиву символов собирая пароль по маске
+     */
 
     for(const item of indexes){
         password = password + allowedChars[item]
@@ -39,35 +36,39 @@ function incrementIndexes(indexes){
         throw new Error('Input must be an array');
     }
 
-    let carry = 1;
-
     for (let i = indexes.length - 1; i >= 0; i--) {
-        indexes[i] += carry;
-        carry = Math.floor(indexes[i] / lengthAllowedChars);
-        indexes[i] %= lengthAllowedChars;
-    }
 
-    while (carry > 0) {
-        indexes.unshift(carry % lengthAllowedChars);
-        carry = Math.floor(carry / lengthAllowedChars);
+        /*
+        Инкрементирую только последний элемент
+         */
+        if(i===indexes.length-1){
+            indexes[i]++;
+        }
+        /*
+        Проверяю не является ли элемент больше максимального значения.
+        Если да,то присваиваю ему 0 и инкрементирую следующий элемент
+         */
+        if(indexes[i]>lengthAllowedChars-1){
+             indexes[i]=0;
+             indexes[i-1]+=1
+        }
     }
 
     return indexes;
 }
+
 
 function canIncrementIndexes(indexes) {
     if (!Array.isArray(indexes)) {
         throw new Error('Input must be an array');
     }
 
-    const differenceIndexArray=[];
     let count=0
+    /*
+       Вычитаю индексы из максимального варианта маски
+    */
     for(let i = 0; i < indexes.length; i++){
-        differenceIndexArray.push(lengthAllowedChars - 1 - indexes[i])
-    }
-
-    for(let i = 0; i < differenceIndexArray.length; i++){
-        count= count+differenceIndexArray[i]
+        count += lengthAllowedChars - 1 - indexes[i]
     }
 
     return count > 0;
@@ -89,4 +90,4 @@ function brute(endLength = 5) {
     }
 }
 
-console.log(brute(lengthPassword))
+console.log(brute(7))
