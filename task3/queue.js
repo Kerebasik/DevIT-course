@@ -29,18 +29,20 @@ class Queue {
         this.#loop();
     }
 
-    add = (task, priority) => {
+    add = (task, priority, onResolve = ()=>{}, onReject = ()=>{}) => {
         /*
         Пушу объект с полями:
             task - задача которую нужно будет выполнить
             priority - её приоритет перед остальными задачами 100 максимальная приоритетность
          */
         if(priority > 100){
-            priority=100
+            priority = 100
         }
         this.#tasks.push({
             task,
-            priority
+            priority,
+            onResolve,
+            onReject
         })
         this.#loop()
     }
@@ -60,8 +62,12 @@ class Queue {
                 reject(e)
             }
         })
+            .then(()=>{
+                taskObject.onResolve()
+            })
             .catch((e)=>{
                 console.log(`Error: ${e}`)
+                taskObject.onReject()
             })
             .finally(()=>{
                 this.#runningThreads--
@@ -71,13 +77,16 @@ class Queue {
             })
     }
 
+    #onFinish = () => {
+        this.stop()
+        return true
+    }
+
     #loop = () => {
-        /*
-        В случае если статус stopped то,
-        очищаю массив с задачами,
-        обнуляю число задачь которые выполняются,
-        заканчиваю выполнения метода loop
-        */
+
+        if(this.#status ===this.#PAUSED){
+            return;
+        }
 
         if (this.#status === this.#STOPPED) {
             this.#tasks = [];
@@ -85,38 +94,24 @@ class Queue {
             return;
         }
 
-        /*
-            Очередь работает при статусе running
-            При статусе paused выполняются те функции которые остались, а потом остается в ожидании run() или add()
-
-            loop() работает если:
-                статус имеет значение running или paused(доделывает задачи которые уже в очереди)
-                счетчик выполняемых задачь меньше максимума выполнения задачь
-                список обычных задач или список приоритетных задачь не пустой
-        */
-
         if (
-            this.#status === this.#RUNNING &&
-            this.#runningThreads < this.#maxRunningThreads &&
-            this.#tasks.length>0
+            this.#status === this.#RUNNING
         ) {
+            if(this.#tasks.length > 0){
 
-            /*
-            Беру задание из очереди заданий
-            Инкрементирую счетчик задачь которые выполняются
-             */
+                if(this.#runningThreads < this.#maxRunningThreads){
 
-            const task = this.#giveTask();
+                    this.#runningThreads++;
+                    const task = this.#giveTask();
+                    this.#runTask(task)
 
-            this.#runningThreads++;
+                }
 
-            this.#runTask(task)
+            } else {
 
-            /*
-            Делаю промис для выполнения внутри него задания которое взял из очереди
-            В блоке catch обрабатываю ошибку которая может произойти внутри промиса
-            В блоке finally деинкрементирую счетчик задачь и проверяю статус running для продолжения работы очереди
-             */
+                this.#onFinish()
+
+            }
         }
     }
 }
@@ -125,31 +120,29 @@ class Queue {
 
 
 
-function createTaskPromise(id) {
+function createTaskPromise() {
     return () =>{
         return new Promise((resolve) => {
-            console.log(`Promise Task id ${id}`)
-            resolve()
+            resolve(2)
         });
     }
 }
 
-function createTaskTimeout(id){
+function createTaskTimeout(){
     return ()=> {
         return setTimeout(()=>{
-            console.log(`Timeout Task id ${id}`)
+            return 1+1
         },4000)
     }
 }
 
-function createTaskSync(id){
-    return ()=> { console.log(`Task sync ${id}`) }
+function createTaskSync(){
+    return ()=> { return 2 }
 }
 
 function createTaskRequest() {
     return async ()=>{
-        const response = await fetch("http://example.com/movies.json");
-        return console.log(response);
+        return  await fetch("http://example.com/movies.json");
     }
 }
 
@@ -158,14 +151,21 @@ function start() {
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
-    for(let i = 1; i<=20; i++){
+    for(let i = 1; i<=100; i++){
         let task
         if(i%2===0){
             task = createTaskPromise(i)
-            queue.add(task, i)
+            queue.add(task,
+                i,
+                () => { console.log(`createTaskPromise Task ${i} is resolve`) },
+                () => { console.log(`createTaskPromise Task ${i} is reject`) }
+            )
         } else {
             task = createTaskSync(i)
-            queue.add(task, i*10)
+            queue.add(task,
+                i*10,
+                () => { console.log(`createTaskSync Task ${i} is resolve`) },
+                () => { console.log(`createTaskSync Task ${i} is reject`) })
         }
 
 
