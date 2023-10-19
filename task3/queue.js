@@ -3,6 +3,7 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
+    #priorityTasks;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
@@ -10,7 +11,8 @@ class Queue {
     constructor(maxRunningThreads) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
-        this.#status = this.#RUNNING // paused, stopped, running
+        this.#priorityTasks = [];
+        this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
 
@@ -34,6 +36,24 @@ class Queue {
         this.#loop()
     }
 
+    addPriorityTask = (task) => {
+        this.#priorityTasks.push(task)
+        this.#loop()
+    }
+
+    #giveTask = () => {
+        /*
+        Проверяю на наличие приоритетных задачь:
+            если они есть, то возвращаю из списка приоритетных задачь
+            если они отсутствуют, то возвращаю из списка обычных задачь
+         */
+        if(this.#priorityTasks.length > 0){
+            return this.#priorityTasks.shift();
+        } else {
+            return this.#tasks.shift();
+        }
+    }
+
     #loop = () => {
         /*
         В случае если статус stopped то,
@@ -51,19 +71,26 @@ class Queue {
         /*
             Очередь работает при статусе running
             При статусе paused выполняются те функции которые остались, а потом остается в ожидании run() или add()
+
+            loop() работает если:
+                статус имеет значение running или paused(доделывает задачи которые уже в очереди)
+                счетчик выполняемых задачь меньше максимума выполнения задачь
+                список обычных задач или список приоритетных задачь не пустой
         */
 
         if (
-            (this.#status === this.#RUNNING || this.#status === this.#PAUSED) &&
+            ( this.#status === this.#RUNNING || this.#status === this.#PAUSED ) &&
             this.#runningThreads < this.#maxRunningThreads &&
-            this.#tasks.length > 0) {
+            ( this.#tasks.length > 0 || this.#priorityTasks.length > 0 )
+        ) {
 
             /*
             Беру задание из очереди заданий
             Инкрементирую счетчик задачь которые выполняются
              */
 
-            const task = this.#tasks.shift();
+            const task = this.#giveTask();
+
             this.#runningThreads++;
 
             /*
@@ -74,8 +101,8 @@ class Queue {
 
             new Promise(async (resolve, reject) => {
                 try {
-                    await task()
-                    resolve()
+                    const data = await task()
+                    resolve(data)
                 } catch (e) {
                     reject(e)
                 }
@@ -95,12 +122,12 @@ class Queue {
 
 ////////////////////////////////////////////////////////////////////////
 
-const queue = new Queue(3);
+
 
 function createTaskPromise(id) {
     return () =>{
         return new Promise((resolve) => {
-            console.log(`Task id ${id}`)
+            console.log(`Promise Task id ${id}`)
             resolve()
         });
     }
@@ -109,7 +136,7 @@ function createTaskPromise(id) {
 function createTaskTimeout(id){
     return ()=> {
         return setTimeout(()=>{
-            console.log(`Task id ${id}`)
+            console.log(`Timeout Task id ${id}`)
         },4000)
     }
 }
@@ -126,13 +153,14 @@ function createTaskRequest() {
 }
 
 function start() {
+    const queue = new Queue(3);
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
-    for(let i = 1; i<=100; i++){
+    for(let i = 1; i<=50; i++){
         let task
         if(i%2===0){
-            if(i<50){
+            if(i<25){
 
                 task = createTaskTimeout(i)
 
@@ -142,7 +170,7 @@ function start() {
 
             }
         } else {
-            if(i<50){
+            if(i<25){
 
                 task = createTaskPromise(i)
 
@@ -152,7 +180,17 @@ function start() {
 
             }
         }
-        queue.add(task);
+
+        if(i%2===0){
+
+            queue.add(task);
+
+        } else {
+
+            queue.addPriorityTask(task)
+
+        }
+
         //queue.pause();
         //queue.run();
         //queue.stop();
