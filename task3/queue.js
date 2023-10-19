@@ -3,7 +3,6 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
-    #priorityTasks;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
@@ -34,9 +33,9 @@ class Queue {
         /*
         Пушу объект с полями:
             task - задача которую нужно будет выполнить
-            priority - её приоритет перед остальными задачами
+            priority - её приоритет перед остальными задачами 100 максимальная приоритетность
          */
-        if(priority >100){
+        if(priority > 100){
             priority=100
         }
         this.#tasks.push({
@@ -52,6 +51,26 @@ class Queue {
         return this.#tasks.shift();
     }
 
+    #runTask = (taskObject) => {
+        new Promise(async (resolve, reject) => {
+            try {
+                const data = await taskObject.task()
+                resolve(data)
+            } catch (e) {
+                reject(e)
+            }
+        })
+            .catch((e)=>{
+                console.log(`Error: ${e}`)
+            })
+            .finally(()=>{
+                this.#runningThreads--
+                if(this.#status === this.#RUNNING){
+                    this.#loop();
+                }
+            })
+    }
+
     #loop = () => {
         /*
         В случае если статус stopped то,
@@ -62,7 +81,7 @@ class Queue {
 
         if (this.#status === this.#STOPPED) {
             this.#tasks = [];
-            // this.#runningThreads = 0;
+            this.#runningThreads = 0;
             return;
         }
 
@@ -77,9 +96,9 @@ class Queue {
         */
 
         if (
-            ( this.#status === this.#RUNNING || this.#status === this.#PAUSED ) &&
+            this.#status === this.#RUNNING &&
             this.#runningThreads < this.#maxRunningThreads &&
-            (this.#tasks.length > 0 || this.#priorityTasks > 0)
+            this.#tasks.length>0
         ) {
 
             /*
@@ -87,37 +106,18 @@ class Queue {
             Инкрементирую счетчик задачь которые выполняются
              */
 
-            const task = this.#giveTask().task;
+            const task = this.#giveTask();
 
             this.#runningThreads++;
+
+            this.#runTask(task)
 
             /*
             Делаю промис для выполнения внутри него задания которое взял из очереди
             В блоке catch обрабатываю ошибку которая может произойти внутри промиса
             В блоке finally деинкрементирую счетчик задачь и проверяю статус running для продолжения работы очереди
              */
-
-            new Promise(async (resolve, reject) => {
-                try {
-                    const data = await task()
-                    resolve(data)
-                } catch (e) {
-                    reject(e)
-                }
-            })
-                .catch((e)=>{
-                    console.log(`Error: ${e}`)
-                })
-                .finally(()=>{
-                    this.#runningThreads--
-                    if(this.#status === this.#RUNNING){
-                        this.#loop();
-                    }
-                })
         }
-
-
-
     }
 }
 
@@ -158,14 +158,14 @@ function start() {
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
-    for(let i = 1; i<=50; i++){
+    for(let i = 1; i<=20; i++){
         let task
         if(i%2===0){
             task = createTaskPromise(i)
             queue.add(task, i)
         } else {
             task = createTaskSync(i)
-            queue.add(task, i*2)
+            queue.add(task, i*10)
         }
 
 
