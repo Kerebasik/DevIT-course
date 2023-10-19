@@ -11,7 +11,6 @@ class Queue {
     constructor(maxRunningThreads) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
-        this.#priorityTasks = [];
         this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
@@ -31,19 +30,15 @@ class Queue {
         this.#loop();
     }
 
-    addPriorityTask = (task) =>{
-        this.#priorityTasks.push({
-            task
-        })
-        this.#loop()
-    }
-
     add = (task, priority) => {
         /*
         Пушу объект с полями:
             task - задача которую нужно будет выполнить
             priority - её приоритет перед остальными задачами
          */
+        if(priority >100){
+            priority=100
+        }
         this.#tasks.push({
             task,
             priority
@@ -53,22 +48,8 @@ class Queue {
 
 
     #giveTask = () => {
-        /*
-        Проверяю есть ли приоритетніе задачи.
-            если да, то возвращаю приоритетную задачу
-            если нет, то беру обычную и сортирую её в зависимости от её коэфициента приоритета
-         */
-        let task
-
-        if( this.#priorityTasks.length > 0 ){
-            task = this.#priorityTasks.shift()
-        } else {
-            this.#tasks.sort((a, b) => a.priority > b.priority ? 1 : -1);
-            task = this.#tasks.shift()
-        }
-
-        return task
-
+        this.#tasks.sort((a, b) => a.priority - b.priority);
+        return this.#tasks.shift();
     }
 
     #loop = () => {
@@ -79,10 +60,10 @@ class Queue {
         заканчиваю выполнения метода loop
         */
 
-        if(this.#status === this.#STOPPED){
+        if (this.#status === this.#STOPPED) {
             this.#tasks = [];
-            this.#runningThreads = 0
-            return
+            // this.#runningThreads = 0;
+            return;
         }
 
         /*
@@ -181,7 +162,7 @@ function start() {
         let task
         if(i%2===0){
             task = createTaskPromise(i)
-            queue.addPriorityTask(task)
+            queue.add(task, i)
         } else {
             task = createTaskSync(i)
             queue.add(task, i*2)
