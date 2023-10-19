@@ -29,8 +29,16 @@ class Queue {
         this.#loop();
     }
 
-    add = (task) => {
-        this.#tasks.push(task)
+    add = (task, priority) => {
+        /*
+        Пушу объект с полями:
+            task - задача которую нужно будет выполнить
+            priority - её приоритет перед остальными задачами
+         */
+        this.#tasks.push({
+            task,
+            priority
+        })
         this.#loop()
     }
 
@@ -44,7 +52,6 @@ class Queue {
         this.#tasks.sort((a, b) => a.priority > b.priority ? 1 : -1);
 
         return this.#tasks.shift()
-
     }
 
     #loop = () => {
@@ -153,18 +160,14 @@ function start() {
     for(let i = 1; i<=50; i++){
         let task
         if(i%2===0){
-            task = {
-                task:createTaskPromise(i),
-                priority: i
-            }
+            task = createTaskPromise(i)
+            queue.add(task, i);
         } else {
-            task = {
-                task:createTaskPromise(i),
-                priority: i*2
-            }
+            task = createTaskSync(i)
+            queue.add(task, i*2)
         }
 
-        queue.add(task);
+
 
         // if(i%2===0){
         //
