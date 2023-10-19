@@ -3,6 +3,7 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
+    #priorityTasks;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
@@ -10,6 +11,7 @@ class Queue {
     constructor(maxRunningThreads) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
+        this.#priorityTasks = [];
         this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
@@ -29,6 +31,13 @@ class Queue {
         this.#loop();
     }
 
+    addPriorityTask = (task) =>{
+        this.#priorityTasks.push({
+            task
+        })
+        this.#loop()
+    }
+
     add = (task, priority) => {
         /*
         Пушу объект с полями:
@@ -45,13 +54,21 @@ class Queue {
 
     #giveTask = () => {
         /*
-        Созтирую все задания по приоритетности, по мере возростания приоритетности
-        Беру возращаю задачу с большеё приоритетностью
+        Проверяю есть ли приоритетніе задачи.
+            если да, то возвращаю приоритетную задачу
+            если нет, то беру обычную и сортирую её в зависимости от её коэфициента приоритета
          */
+        let task
 
-        this.#tasks.sort((a, b) => a.priority > b.priority ? 1 : -1);
+        if( this.#priorityTasks.length > 0 ){
+            task = this.#priorityTasks.shift()
+        } else {
+            this.#tasks.sort((a, b) => a.priority > b.priority ? 1 : -1);
+            task = this.#tasks.shift()
+        }
 
-        return this.#tasks.shift()
+        return task
+
     }
 
     #loop = () => {
@@ -81,7 +98,7 @@ class Queue {
         if (
             ( this.#status === this.#RUNNING || this.#status === this.#PAUSED ) &&
             this.#runningThreads < this.#maxRunningThreads &&
-            this.#tasks.length > 0
+            (this.#tasks.length > 0 || this.#priorityTasks > 0)
         ) {
 
             /*
@@ -117,6 +134,9 @@ class Queue {
                     }
                 })
         }
+
+
+
     }
 }
 
@@ -161,23 +181,12 @@ function start() {
         let task
         if(i%2===0){
             task = createTaskPromise(i)
-            queue.add(task, i);
+            queue.addPriorityTask(task)
         } else {
             task = createTaskSync(i)
             queue.add(task, i*2)
         }
 
-
-
-        // if(i%2===0){
-        //
-        //     queue.add(task);
-        //
-        // } else {
-        //
-        //     queue.addPriorityTask(task)
-        //
-        // }
 
         //queue.pause();
         //queue.run();
