@@ -3,7 +3,6 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
-    #priorityTasks;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
@@ -11,7 +10,6 @@ class Queue {
     constructor(maxRunningThreads) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
-        this.#priorityTasks = [];
         this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
@@ -36,22 +34,17 @@ class Queue {
         this.#loop()
     }
 
-    addPriorityTask = (task) => {
-        this.#priorityTasks.push(task)
-        this.#loop()
-    }
 
     #giveTask = () => {
         /*
-        Проверяю на наличие приоритетных задачь:
-            если они есть, то возвращаю из списка приоритетных задачь
-            если они отсутствуют, то возвращаю из списка обычных задачь
+        Созтирую все задания по приоритетности, по мере возростания приоритетности
+        Беру возращаю задачу с большеё приоритетностью
          */
-        if(this.#priorityTasks.length > 0){
-            return this.#priorityTasks.shift();
-        } else {
-            return this.#tasks.shift();
-        }
+
+        this.#tasks.sort((a, b) => a.priority > b.priority ? 1 : -1);
+
+        return this.#tasks.shift()
+
     }
 
     #loop = () => {
@@ -81,7 +74,7 @@ class Queue {
         if (
             ( this.#status === this.#RUNNING || this.#status === this.#PAUSED ) &&
             this.#runningThreads < this.#maxRunningThreads &&
-            ( this.#tasks.length > 0 || this.#priorityTasks.length > 0 )
+            this.#tasks.length > 0
         ) {
 
             /*
@@ -89,7 +82,7 @@ class Queue {
             Инкрементирую счетчик задачь которые выполняются
              */
 
-            const task = this.#giveTask();
+            const task = this.#giveTask().task;
 
             this.#runningThreads++;
 
@@ -115,7 +108,7 @@ class Queue {
                     if(this.#status === this.#RUNNING){
                         this.#loop();
                     }
-            })
+                })
         }
     }
 }
@@ -160,36 +153,28 @@ function start() {
     for(let i = 1; i<=50; i++){
         let task
         if(i%2===0){
-            if(i<25){
-
-                task = createTaskTimeout(i)
-
-            } else {
-
-                task = createTaskRequest()
-
+            task = {
+                task:createTaskPromise(i),
+                priority: i
             }
         } else {
-            if(i<25){
-
-                task = createTaskPromise(i)
-
-            } else {
-
-                task = createTaskSync(i)
-
+            task = {
+                task:createTaskPromise(i),
+                priority: i*2
             }
         }
 
-        if(i%2===0){
+        queue.add(task);
 
-            queue.add(task);
-
-        } else {
-
-            queue.addPriorityTask(task)
-
-        }
+        // if(i%2===0){
+        //
+        //     queue.add(task);
+        //
+        // } else {
+        //
+        //     queue.addPriorityTask(task)
+        //
+        // }
 
         //queue.pause();
         //queue.run();
