@@ -3,13 +3,15 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
+    #onCallback;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
 
-    constructor(maxRunningThreads) {
+    constructor(maxRunningThreads, onCallback=()=>{}) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
+        this.#onCallback = onCallback;
         this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
@@ -29,7 +31,7 @@ class Queue {
         this.#loop();
     }
 
-    add = (task, priority, onResolve = ()=>{}, onReject = ()=>{}) => {
+    add = (task, priority, onResolve = ()=>{}, onReject = ()=>{}, onComplete = {}) => {
         /*
         Пушу объект с полями:
             task - задача которую нужно будет выполнить
@@ -44,7 +46,8 @@ class Queue {
             task,
             priority,
             onResolve,
-            onReject
+            onReject,
+            onComplete
         })
         this.#loop()
     }
@@ -96,8 +99,9 @@ class Queue {
             })
     }
 
-    onFinish = () => {
+    #onFinish = () => {
         this.stop()
+        this.#onCallback();
         return true
     }
 
@@ -166,7 +170,11 @@ function createTaskRequest() {
 }
 
 function start() {
-    const queue = new Queue(3);
+    const callback = () => {
+        console.log('Queue выполнена')
+    }
+
+    const queue = new Queue(3, callback);
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
