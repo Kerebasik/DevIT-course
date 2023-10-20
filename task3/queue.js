@@ -31,26 +31,28 @@ class Queue {
         this.#loop();
     }
 
-    add = (task, priority, onResolve = ()=>{}, onReject = ()=>{}, onComplete = {}) => {
+    add = (task, options = {}) => {
         /*
         Пушу объект с полями:
             task - задача которую нужно будет выполнить
-            priority - её приоритет перед остальными задачами. 100 максимальная приоритетность
-            onResolve - Колбэк при успешном выполнении задачи.
-            onReject - Колбэк при не успешном выполнении задачи.
+            options.priority - её приоритет перед остальными задачами. 100 максимальная приоритетность
+            options.onResolve - Колбэк при успешном выполнении задачи.
+            options.onReject - Колбэк при не успешном выполнении задачи.
          */
-        if(priority > 100){
-            priority = 100
+        if (options.priority > 100) {
+            options.priority = 100;
         }
+
         this.#tasks.push({
             task,
-            priority,
-            onResolve,
-            onReject,
-            onComplete
-        })
-        this.#loop()
+            priority: options.priority,
+            onResolve: options.onResolve || (() => {}),
+            onReject: options.onReject || (() => {}),
+        });
+
+        this.#loop();
     }
+
 
 
     #giveTask = () => {
@@ -178,18 +180,23 @@ function start() {
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
-    for(let i = 1; i<=100; i++){
-        let task
-            task = createTaskPromise(i)
-            queue.add(task,
-                i,
-                () => { console.log(`createTaskPromise Task ${i} is resolve`) },
-                () => { console.log(`createTaskPromise Task ${i} is reject`) }
-            )
-
+    for (let i = 1; i <= 100; i++) {
+        let task = createTaskPromise(i);
+        const options = {
+            priority: i,
+            onResolve: () => {
+                console.log(`createTaskPromise Task ${i} is resolve`);
+            },
+            onReject: () => {
+                console.log(`createTaskPromise Task ${i} is reject`);
+            }
+        };
+        queue.add(task, options);
     }
 }
 
 start();
+
+
 
 
