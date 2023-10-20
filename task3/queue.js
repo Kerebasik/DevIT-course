@@ -96,7 +96,7 @@ class Queue {
             })
     }
 
-    #onFinish = () => {
+    onFinish = () => {
         this.stop()
         return true
     }
