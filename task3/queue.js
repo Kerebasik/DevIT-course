@@ -51,7 +51,7 @@ class Queue {
 
 
     #giveTask = () => {
-        const random = randomNumber(); // беру рандомное число
+        const random = this.#randomNumber(); // беру рандомное число
 
         let task
 
@@ -66,6 +66,10 @@ class Queue {
         }
 
         return task
+    }
+
+    #randomNumber = () =>{
+        return Math.floor(Math.random() * 99) + 1 // 1 до 100
     }
 
     #runTask = (taskObject) => {
@@ -159,10 +163,6 @@ function createTaskRequest() {
     return async ()=>{
         return  await fetch("http://example.com/movies.json");
     }
-}
-
-function randomNumber(){
-    return Math.floor(Math.random() * 99) + 1
 }
 
 function start() {
