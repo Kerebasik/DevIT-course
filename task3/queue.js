@@ -51,8 +51,21 @@ class Queue {
 
 
     #giveTask = () => {
-        this.#tasks.sort((a, b) => a.priority - b.priority);
-        return this.#tasks.shift();
+        const random = randomNumber(); // беру рандомное число
+
+        let task
+
+        for (let i = 0; i < this.#tasks.length; i++) { // прохожусь по очереди
+            if (this.#tasks[i].priority >= random) { // если нахожу задачу с приоритетом больше чем рандомное число возвращаю его
+                return this.#tasks.splice(i, 1)[0];
+            }
+        }
+
+        if(task === undefined){ // если я прошел по задачам и не нашел задачу с приоритетом больше чем рандомное число, просто беру из начала очереди.
+            task = this.#tasks.shift();
+        }
+
+        return task
     }
 
     #runTask = (taskObject) => {
@@ -65,11 +78,11 @@ class Queue {
             }
         })
             .then(()=>{
-                taskObject.onResolve()
+                taskObject?.onResolve()
             })
             .catch((e)=>{
                 console.log(`Error: ${e}`)
-                taskObject.onReject()
+                taskObject?.onReject()
             })
             .finally(()=>{
                 this.#runningThreads--
@@ -148,6 +161,10 @@ function createTaskRequest() {
     }
 }
 
+function randomNumber(){
+    return Math.floor(Math.random() * 99) + 1
+}
+
 function start() {
     const queue = new Queue(3);
     /*
@@ -155,25 +172,13 @@ function start() {
      */
     for(let i = 1; i<=100; i++){
         let task
-        if(i%2===0){
             task = createTaskPromise(i)
             queue.add(task,
                 i,
                 () => { console.log(`createTaskPromise Task ${i} is resolve`) },
                 () => { console.log(`createTaskPromise Task ${i} is reject`) }
             )
-        } else {
-            task = createTaskSync(i)
-            queue.add(task,
-                i*10,
-                () => { console.log(`createTaskSync Task ${i} is resolve`) },
-                () => { console.log(`createTaskSync Task ${i} is reject`) })
-        }
 
-
-        //queue.pause();
-        //queue.run();
-        //queue.stop();
     }
 }
 
