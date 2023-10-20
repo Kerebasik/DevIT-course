@@ -3,15 +3,15 @@ class Queue {
     #tasks;
     #status;
     #runningThreads;
-    #onCallback;
+    #onQueueComplete;
     #RUNNING = 'running';
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
 
-    constructor(maxRunningThreads, onCallback=()=>{}) {
+    constructor(maxRunningThreads, onQueueComplete=()=>{}) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
-        this.#onCallback = onCallback;
+        this.#onQueueComplete = onQueueComplete;
         this.#status = this.#RUNNING; // paused, stopped, running
         this.#runningThreads = 0;
     }
@@ -103,7 +103,7 @@ class Queue {
 
     #onFinish = () => {
         this.stop()
-        this.#onCallback();
+        this.#onQueueComplete();
         return true
     }
 
