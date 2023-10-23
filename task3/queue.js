@@ -8,7 +8,7 @@ class Queue {
     #STOPPED = 'stopped';
     #PAUSED = 'paused';
 
-    constructor(maxRunningThreads, onQueueComplete=()=>{}) {
+    constructor(maxRunningThreads = 5, onQueueComplete=()=>{}) {
         this.#maxRunningThreads = maxRunningThreads;
         this.#tasks = [];
         this.#onQueueComplete = onQueueComplete;
@@ -44,7 +44,7 @@ class Queue {
         }
 
         this.#tasks.push({
-            task,
+            task: () => task,
             priority: options.priority,
             onResolve: options.onResolve || (() => {}),
             onReject: options.onReject || (() => {}),
@@ -146,19 +146,15 @@ class Queue {
 
 
 function createTaskPromise() {
-    return () =>{
         return new Promise((resolve) => {
             resolve(2)
         });
-    }
 }
 
 function createTaskTimeout(){
-    return ()=> {
         return setTimeout(()=>{
             return 1+1
         },4000)
-    }
 }
 
 function createTaskSync(){
@@ -166,22 +162,22 @@ function createTaskSync(){
 }
 
 function createTaskRequest() {
-    return async ()=>{
-        return  await fetch("http://example.com/movies.json");
-    }
+        return  fetch("http://example.com/movies.json");
 }
+
+
 
 function start() {
     const callback = () => {
         console.log('Queue выполнена')
     }
 
-    const queue = new Queue(3, callback);
+    const queue = new Queue(5, callback);
     /*
     Прокидую в очередь Promise, Timeout, Request, Обычную функцию
      */
     for (let i = 1; i <= 100; i++) {
-        let task = createTaskPromise(i);
+        let task = createTaskTimeout(i);
         const options = {
             priority: i,
             onResolve: () => {
