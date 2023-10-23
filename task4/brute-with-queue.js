@@ -83,8 +83,7 @@ class Queue {
             .then(()=>{
                 taskObject?.onResolve()
             })
-            .catch((e)=>{
-                console.log('Error: ', e)
+            .catch(()=>{
                 taskObject?.onReject()
             })
             .finally(()=>{
