@@ -241,10 +241,10 @@ function brute(maxLengthPassword = 6, priorityChars ) {
     let indexes
 
     for (let i = 1; i <= maxLengthPassword; i++) {
-        let gena = generateIndexes(i); // создаем генератор который будет возвращать нам индексы
+        let indexesGenerator   = generateIndexes(i); // создаем генератор который будет возвращать нам индексы
 
         do {
-            indexes = gena.next() // возвращаем первый yield генератора
+            indexes = indexesGenerator.next() // возвращаем первый yield генератора
             if (indexes.value === undefined){ // в случае если value === undefined, то мы останавливаем цикл
                 break;
             }
