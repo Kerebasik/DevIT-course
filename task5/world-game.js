@@ -30,13 +30,13 @@ class World {
             switch (random){
                 case 1:{
                     this.#statistic.cataclysm.tsunami+=1
-                    const tsunami = new Tsunami();
+                    const tsunami = new NaturalCataclysm('Tsunami', 3000);
                     tsunami.affectPopulation(this)
                     break;
                 }
                 case 2:{
                     this.#statistic.cataclysm.war+=1
-                    const war = new War()
+                    const war = new ManMadeCataclysm('War', 30)
                     war.affectPopulation(this)
                     break;
                 }
@@ -75,7 +75,7 @@ class World {
             return human.gender === Human.maleGender && human.age > 18 && human.age < 70
         })
 
-        this.#statistic.yearly.countWomen=women.length
+        this.#statistic.yearly.countWomen = women.length
         this.#statistic.yearly.countMen = men.length
 
         while (women.length > 0 && men.length > 0) {
@@ -92,7 +92,6 @@ class World {
                         !randomWoman.parentsID.includes(randomMan.id)
                     ) {
                         if (Math.random() <= 0.85) { // Шанс беременности 85%
-
                             if (Math.random() <= 0.1) {
                                 // Шанс рождения двойни 10%
                                 this.#childbirth(randomWoman, randomMan, 2);
@@ -486,20 +485,25 @@ class Human {
 }
 
 class Cataclysm {
+    _name
     constructor(name) {
-        this.name = name;
+        this._name = name;
     }
 
-    disasterAllLives() {
-        return console.log(`Cataclysm disaster claimed all lives`)
+    show(){
+        console.log(`Cataclysm ${this._name}`)
+    }
+
+    disasterAllLivesShow() {
+        console.log(`Cataclysm ${this._name} disaster claimed all lives`)
     }
 }
 
-class Tsunami extends Cataclysm {
-    #casualties
-    constructor() {
-        super('Tsunami');
-        this.#casualties = 4600;
+class NaturalCataclysm extends Cataclysm{
+    #casualties;
+    constructor(name, casualties) {
+        super(name)
+        this.#casualties = casualties;
     }
 
     affectPopulation(world) {
@@ -509,61 +513,61 @@ class Tsunami extends Cataclysm {
             this.#show()
         } else {
             world.population = [];
-            this.disasterAllLives()
+            this.disasterAllLivesShow()
         }
 
     }
 
-    #show() {
-        return console.log(`Tsunami disaster claimed ${this.#casualties} lives`)
+    #show(){
+        console.log(`${this._name} claimed ${this.#casualties} lives`)
     }
+
 }
 
-class War extends Cataclysm {
-    #casualties
-    constructor() {
-        super('War');
+class ManMadeCataclysm extends Cataclysm{
+    #percentOfThePopulation
+    constructor(name, percentOfThePopulation) {
+        super(name);
+        this.#percentOfThePopulation = percentOfThePopulation
     }
 
     affectPopulation(world) {
-        const casualties = Math.floor(world.population.length*0.3)
+        const casualties = Math.floor(world.population.length * (this.#percentOfThePopulation / 100))
+        console.log(casualties)
         if (world.population.length >= casualties) {
             world.population.splice(0, casualties);
             this.#show()
         } else {
             world.population = [];
-            this.disasterAllLives()
+            this.disasterAllLivesShow()
         }
+    }
 
-    }
     #show() {
-        return console.log(`War disaster claimed ${this.#casualties} lives`)
+        console.log(`${this._name} claimed ${this.#percentOfThePopulation}% lives`)
     }
+
 }
 
 class GenderCataclysm extends Cataclysm {
-    #name
     #gender
     constructor(name, gender) {
         super(name);
-        this.#name = name
         this.#gender = gender
     }
 
     affectPopulation(world) {
         world.population = world.population.filter((human, index) => {
-
             return !(human.gender === this.#gender && index % 2 === 0);
-
-
         });
         this.#show();
     }
 
     #show(){
-        return console.log(`${this.name} took half our lives`)
+        console.log(`${this.name} took half our lives of ${this.#gender}`)
     }
 }
+
 const world = new World()
 const person1 = new Human( {firstName:'Dave', lastName:'Johnson', gender:Human.maleGender, height:180, eyeColor:'Brown', hairColor:'Blond'});
 const person2 = new Human({firstName:'Shara',lastName:'Gray', gender:Human.womanGender, height:150, eyeColor:'Blue', hairColor:'Black'})
