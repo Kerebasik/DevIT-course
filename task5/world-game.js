@@ -1,11 +1,9 @@
 class World {
     #population
     #statistic
-    #couples
 
     constructor() {
         this.#population = []
-        this.#couples = []
         this.#statistic = {
             yearly:{
                 countMen:0,
@@ -83,9 +81,7 @@ class World {
             const randomMan = men[Math.floor(Math.random() * men.length)];
 
             if (randomWoman && randomMan) {
-
                 if (this.#population.length < 200 || Human.haveSameParents(randomWoman, randomMan)) {
-
                     if (
                         Math.abs(randomWoman.age - randomMan.age) <= 5 &&
                         !randomMan.parentsID.includes(randomWoman.id) &&
