@@ -42,6 +42,7 @@ body{
 
 .panel{
     height: 100%;
+    width: 100%;
     flex: 1 1 25%;
     padding: 20px;
     display: flex;
@@ -109,4 +110,24 @@ button{
 
 .player-goes{
     font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .buttons{
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 426px) {
+    .blackjack-table{
+        flex-direction: column;
+    }
+    .buttons{
+        flex-direction: row;
+        gap:5px;
+    }
+    .panel{
+        border-left: none;
+        border-top: 5px dashed  #BFC96C;
+    }
 }
