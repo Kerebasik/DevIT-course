@@ -31,6 +31,11 @@ document.getElementById(`start-game-button`).addEventListener('click', () => {
     updateDisplay();
 });
 
+function overkillLog(playerIndex){
+    const log = document.getElementById(`player-${playerIndex + 1}-log`);
+    log.innerText = 'Перебор'; // отрисовка лога в случае перебора
+}
+
 //Накидываю слушатели на кнопки игроков и в ходе игры скрываю кнопку взять если у игрока перебор
 
 function initMenuButtons() {
@@ -48,11 +53,9 @@ function initMenuButtons() {
                     const newCard = game.deck.drawCard()
 
                     game.players[i].addCard(newCard);
-                    updateDisplay();
 
                     if (game.players[i].getHandValue() > 21) { // Проверка на перебор после взятии карты
-                        const log = document.getElementById(`player-${i + 1}-log`);
-                        log.innerText = 'Перебор'; // отрисовка лога в случае перебора
+                        overkillLog(i)
                     }
                     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
 
