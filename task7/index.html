@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aliens Invaders.js</title>
+    <link type="text/css" rel="stylesheet" href="styles/null.css">
+    <link type="text/css" rel="stylesheet" href="styles/start-page.css">
+    <link type="text/css" rel="stylesheet" href="styles/game.css">
+    <link type="text/css" rel="stylesheet" href="styles/winner-page.css">
+    <link type="text/css" rel="stylesheet" href="styles/game-over-page.css">
+</head>
+<body>
+
+    <div class="start-page">
+        <h1>Aliens Invaders</h1>
+        <button id="start-button">
+            Start Game
+        </button>
+    </div>
+
+    <div class="game-page">
+        <div class="game">
+            <div class="game-score">
+                <h1>Hi-Scope: <span>0</span></h1>
+            </div>
+
+            <div class="game-container">
+                <div id="play">
+                    <div id="alien"></div>
+                    <div id="player"></div>
+                </div>
+            </div>
+
+
+            <div class="game-ability">
+                <div class="game-ability__data">
+                    <div class="lives">
+                        Lives: <span>0</span>
+                    </div>
+
+                    <div class="weapon">
+
+                    </div>
+
+                    <div class="level">
+                        Level <span>0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="winner-page">
+        <div class="winner-log">
+            <h1>WINNER</h1>
+            <p>HI-SCORE: <span id="winner-score-log">0</span></p>
+            <img alt="Cup for winner" src="./assets/winner.png"/>
+            <button id="winner-page-start-button">
+                Start Game
+            </button>
+        </div>
+    </div>
+
+    <div class="game-over-page">
+        <div class="game-over-log">
+            <h1>GAME OVER</h1>
+            <p>HI-SCORE: <span id="game-over-score-log">0</span></p>
+            <img alt="puss" src="./assets/puss-cute.jpg"/>
+            <button id="game-over-start-button">
+                Start Game
+            </button>
+        </div>
+    </div>
+
+<script src="scripts/index.js" defer></script>
+</body>
+</html>
