@@ -1,0 +1,27 @@
+.winner-page{
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.winner-log{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+}
+
+.winner-log img{
+    width: 120px;
+}
+
+.winner-log p{
+    color: white;
+    letter-spacing: 5px;
+    text-shadow: #FC0 1px 0 20px;
+    font-size: 18px;
+    font-weight: 700;
+}
