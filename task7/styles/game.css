@@ -1,0 +1,73 @@
+.game-page{
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.game{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.game-ability__data{
+
+}
+
+.game-score{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 5px dashed rgb(52,36,100);
+    padding: 5px 0;
+}
+
+.game-score h1{
+    font-size: 24px;
+}
+
+.game-ability{
+    color: white;
+    border-top: 5px dashed rgb(52,36,100);
+    padding: 5px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-ability__data{
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 24px;
+}
+
+#play {
+    width: 890px;
+    height: 600px;
+    border-left: 5px dashed rgb(52,36,100);
+    border-right:5px dashed rgb(52,36,100);
+    margin: 0 auto;
+    position: relative;
+}
+
+#player {
+    width: 25px;
+    height: 25px;
+    background-color: blue;
+    position: absolute;
+    left: 410px;
+    bottom: 0;
+}
+
+#alien {
+    width: 25px;
+    height: 25px;
+    background-color: green;
+    position: absolute;
+    top: 0;
+}
+
