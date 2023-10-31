@@ -1,0 +1,27 @@
+.game-over-page{
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.game-over-log{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+}
+
+.game-over-log img{
+    width: 600px;
+}
+
+.game-over-log p{
+    color: white;
+    letter-spacing: 5px;
+    text-shadow: #FC0 1px 0 20px;
+    font-size: 18px;
+    font-weight: 700;
+}
