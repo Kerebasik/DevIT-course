@@ -45,6 +45,12 @@
     font-size: 24px;
 }
 
+td{
+    width: 25px;
+    height: 25px;
+    background-color: green;
+}
+
 #play {
     width: 890px;
     height: 600px;
@@ -55,19 +61,103 @@
 }
 
 #player {
-    width: 25px;
-    height: 25px;
-    background-color: blue;
+    width: 30px;
+    height: 15px;
+    background-image: url("../assets/player.png");
     position: absolute;
     left: 410px;
     bottom: 0;
 }
 
-#alien {
+.alien{
     width: 25px;
     height: 25px;
     background-color: green;
     position: absolute;
+}
+
+#alien-level-4-1 {
+    top: 30px;
+}
+
+#alien-level-3-1 {
+    top: 60px;
+}
+
+#alien-level-2-1 {
+    top: 90px;
+}
+
+#alien-level-1-1 {
+    top: 120px
+}
+
+#alien-level-1-2 {
+    left: 30px;
+    top: 120px
+}
+
+#alien-level-1-3 {
+    left: 60px;
+    top: 120px
+}
+
+#alien-level-1-4{
+    left: 90px;
+    top: 120px
+}
+
+#alien-level-1-5{
+    left: 120px;
+    top: 120px
+}
+
+#alien-level-5-1 {
     top: 0;
 }
+
+#alien-level-5-2 {
+    left: 30px;
+    top: 0;
+}
+
+#alien-level-5-3 {
+    left: 60px;
+    top: 0
+}
+
+#alien-level-5-4 {
+    left: 90px;
+    top: 0
+}
+#alien-level-5-5 {
+    left: 120px;
+    top: 0
+}
+#alien-level-5-6 {
+    left: 150px;
+    top: 0
+}
+
+#alien-level-5-7 {
+    left: 180px;
+    top: 0
+}
+
+#alien-level-5-8 {
+    left: 210px;
+    top: 0
+}
+
+#alien-level-5-9 {
+    left: 240px;
+    top: 0
+}
+
+#alien-level-5-10 {
+    left: 270px;
+    top: 0
+}
+
+
 
