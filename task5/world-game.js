@@ -1,3 +1,16 @@
+const Helper = {
+    random: () => {
+        return Math.floor(Math.random() * 99) + 1; // случайное число от 1 до 100
+    },
+    randomAgeOfDeath: () => {
+        return Math.floor(20 + Math.random() * (100 + 1 - 20)); // случайный возраст смерти от 20 до 100
+    },
+    randomWeight: () => {
+        return Math.floor(Math.random() * (120 - 50 + 1) + 50); // случайный вес от 50 до 120
+    },
+};
+
+
 class World {
     #population
     #statistic
@@ -57,48 +70,52 @@ class World {
 
     #agingPopulation = () => {
         for(let human of this.#population){
-            human.age+=1
-            if(human.age === human.ageOfDeath){
-                this.#deathHuman(human)
-            }
+            human.aging(this)
         }
     }
 
-    #createCouples = () => {
-        const women = this.#population.filter((human) => {
+    #filterWomen = () => {
+        return this.#population.filter((human) => {
             return human.gender === Human.womanGender && human.age > 18 && human.age < 60
         })
+    }
 
-        const men = this.#population.filter((human) => {
+    #filterMen = () => {
+        return this.#population.filter((human) => {
             return human.gender === Human.maleGender && human.age > 18 && human.age < 70
         })
+    }
+
+    #randomMan = (men= []) => {
+        return men[Math.floor(Math.random() * men.length)];
+    }
+
+    #randomWoman = (women = []) => {
+        return women[Math.floor(Math.random() * women.length)]
+    }
+
+    #createCouples = () => {
+        const women = this.#filterWomen()
+
+        const men = this.#filterMen()
 
         this.#statistic.yearly.countWomen = women.length
         this.#statistic.yearly.countMen = men.length
 
         while (women.length > 0 && men.length > 0) {
-            const randomWoman = women[Math.floor(Math.random() * women.length)];
-            const randomMan = men[Math.floor(Math.random() * men.length)];
+
+            const randomWoman = this.#randomWoman(women);
+            const randomMan = this.#randomMan(men)
 
             if (randomWoman && randomMan) {
                 if (this.#population.length < 200 || Human.haveSameParents(randomWoman, randomMan)) {
-                    if (
-                        Math.abs(randomWoman.age - randomMan.age) <= 5 &&
-                        !randomMan.parentsID.includes(randomWoman.id) &&
-                        !randomWoman.parentsID.includes(randomMan.id)
-                    ) {
-                        if (Math.random() <= 0.85) { // Шанс беременности 85%
-                            if (Math.random() <= 0.1) {
-                                // Шанс рождения двойни 10%
-                                this.#childbirth(randomWoman, randomMan, 2);
-                            } else if (Math.random() <= 0.05) {
-                                // Шанс рождения тройни 5%
-                                this.#childbirth(randomWoman, randomMan, 3);
-                            } else {
-                                this.#childbirth(randomWoman, randomMan);
-                            }
-                        }
-                    }
+
+                    const children = Human.sympathy(randomWoman, randomMan)
+
+                    children?.map((child)=>{
+                        this.addHuman(child)
+                        this.#statistic.yearly.born += 1;
+                    })
                 }
             }
 
@@ -106,30 +123,6 @@ class World {
             men.splice(men.indexOf(randomMan), 1);
         }
     }
-
-    #childbirth = (mom, dad, numberOfChildren = 1) => {
-        this.#statistic.yearly.born += numberOfChildren;
-        for (let i = 0; i < numberOfChildren; i++) {
-            const lastName = dad.lastName;
-            const gender = Human.giveGender(mom.gender, dad.gender);
-            const height = Human.giveHeight(mom.height, dad.height, gender);
-            const eyeColor = Human.giveEyeColor(mom.eyeColor, dad.eyeColor);
-            const hairColor = Human.giveHairColor(mom.hairColor, dad.hairColor);
-            const parentsID = [mom.id, dad.id];
-            const options = {
-                lastName,
-                gender,
-                height,
-                eyeColor,
-                hairColor,
-                parentsID
-            };
-
-            const newChild = new Human(options);
-            this.addHuman(newChild);
-        }
-    }
-
 
     #passYear = () => {
         this.#statistic.year++
@@ -157,7 +150,6 @@ class World {
         this.#statistic.yearly.born=0
     }
 
-
     addHuman = (human) => {
         this.#population.push(human)
     }
@@ -166,7 +158,7 @@ class World {
         this.#life()
     }
 
-    #deathHuman = (human) => {
+    deathHuman = (human) => {
         this.#statistic.yearly.dead+=1
 
         for(let i = 0; i < this.#population.length; i++){
@@ -239,6 +231,7 @@ class Human {
         "Charles",
         "Thomas"
     ]
+
     #womensFirstNameList = ["Emily",
         "Sarah",
         "Jessica",
@@ -253,29 +246,24 @@ class Human {
 
 
     constructor({firstName, lastName, gender, weight, height, eyeColor, hairColor, parentsID}){
-        this.#id = Date.now() + this.#random();
+        this.#id = Date.now() + Helper.random()
         this.#firstName = firstName || this.#randomFirstName(gender);
         this.#lastName = lastName;
         this.#gender = gender;
-        this.#ageOfDeath = this.#randomAgeOfDeath();
+        this.#ageOfDeath = Helper.randomAgeOfDeath();
         this.#parentID = parentsID || []
         this.#age = 0;
-        this.#weight = weight || this.#randomWeight;
+        this.#weight = weight || Helper.randomWeight();
         this.#height = height;
         this.#eyeColor = eyeColor;
         this.#hairColor = hairColor;
     }
 
-    #random = () =>{
-        return Math.floor(Math.random() * 99) + 1 // случайное число от 1 до 100
-    }
-
-    #randomAgeOfDeath = () =>{
-        return Math.floor(20 + Math.random() * (100 + 1 - 20)) // случайный возраст смерти от 20 до 100. 20 взята для того чтобы первые люди могли дать потомство
-    }
-
-    #randomWeight = () => {
-        return Math.floor(Math.random() * (120 - 50 + 1) + 50); // случайный вес от 50 до 120
+    aging = (world) =>{
+        this.#age += 1
+        if(this.age === this.ageOfDeath){
+            world.deathHuman(this)
+        }
     }
 
     #randomFirstName = (gender) => {
@@ -402,8 +390,9 @@ class Human {
         return childEyeColor
     }
 
-    static giveGender = (momGender, dadGender) => {
-        return Math.random() < 0.5 ? momGender : dadGender
+
+    static giveGender = () => {
+        return Math.random() < 0.5 ? this.womanGender : this.maleGender
     }
 
     /*
@@ -414,6 +403,56 @@ class Human {
         // Проверка, что у женщины и мужчины нет общих родителей
         return woman.parentsID.every(id => !man.parentsID.includes(id));
     }
+
+    static sympathy = (randomWoman, randomMan) => {
+        if(
+            Math.abs(randomWoman.age - randomMan.age) <= 5 &&
+            !randomMan.parentsID.includes(randomWoman.id) &&
+            !randomWoman.parentsID.includes(randomMan.id)
+        ) {
+           return this.pregnancy(randomWoman, randomMan)
+        }
+    }
+
+    static pregnancy = (randomWoman, randomMan) => {
+        if (Math.random() <= 0.85) { // Шанс беременности 85%
+            if (Math.random() <= 0.1) {
+                // Шанс рождения двойни 10%
+               return this.#childbirth(randomWoman, randomMan, 2);
+            } else if (Math.random() <= 0.05) {
+                // Шанс рождения тройни 5%
+                return this.#childbirth(randomWoman, randomMan, 3);
+            } else {
+                return this.#childbirth(randomWoman, randomMan);
+            }
+        }
+    }
+
+    static #childbirth = (mom, dad, numberOfChildren = 1) => {
+        //this.#statistic.yearly.born += numberOfChildren;
+        const newChildren = [];
+        for (let i = 0; i < numberOfChildren; i++) {
+            const lastName = dad.lastName;
+            const gender = Human.giveGender();
+            const height = Human.giveHeight(mom.height, dad.height, gender);
+            const eyeColor = Human.giveEyeColor(mom.eyeColor, dad.eyeColor);
+            const hairColor = Human.giveHairColor(mom.hairColor, dad.hairColor);
+            const parentsID = [mom.id, dad.id];
+            const options = {
+                lastName,
+                gender,
+                height,
+                eyeColor,
+                hairColor,
+                parentsID
+            };
+
+            const newChild = new Human(options);
+            newChildren.push(newChild)
+        }
+        return newChildren
+    }
+
 
     static giveHeight = (momHeight, dadHeight, childGender) => {
         if (momHeight < 0 || dadHeight < 0 || !childGender) {
@@ -482,42 +521,37 @@ class Human {
 
 class Cataclysm {
     _name
-    constructor(name) {
+    _casualties
+    constructor(name, casualties) {
         this._name = name;
+        this._casualties = casualties
     }
 
-    show(){
-        console.log(`Cataclysm ${this._name}`)
+    _show(){
+        console.log(`${this._name} claimed ${this._casualties} lives`)
     }
 
-    disasterAllLivesShow() {
+    _disasterAllLivesShow() {
         console.log(`Cataclysm ${this._name} disaster claimed all lives`)
     }
 }
 
 class NaturalCataclysm extends Cataclysm{
-    #casualties;
     constructor(name, casualties) {
-        super(name)
-        this.#casualties = casualties;
+        super(name, casualties)
     }
 
     affectPopulation(world) {
-        const casualties = this.#casualties;
+        const casualties = this._casualties;
         if (world.population.length >= casualties) {
             world.population.splice(0, casualties);
-            this.#show()
+            this._show()
         } else {
             world.population = [];
-            this.disasterAllLivesShow()
+            this._disasterAllLivesShow()
         }
 
     }
-
-    #show(){
-        console.log(`${this._name} claimed ${this.#casualties} lives`)
-    }
-
 }
 
 class ManMadeCataclysm extends Cataclysm{
@@ -535,12 +569,12 @@ class ManMadeCataclysm extends Cataclysm{
             this.#show()
         } else {
             world.population = [];
-            this.disasterAllLivesShow()
+            this._disasterAllLivesShow()
         }
     }
 
     #show() {
-        console.log(`${this._name} claimed ${this.#percentOfThePopulation}% lives`)
+        console.log(`${this._name} claimed ${this.#percentOfThePopulation} percent lives`)
     }
 
 }
@@ -560,7 +594,7 @@ class GenderCataclysm extends Cataclysm {
     }
 
     #show(){
-        console.log(`${this.name} took half our lives of ${this.#gender}`)
+        console.log(`${this._name} took half our lives of ${this.#gender}`)
     }
 }
 
