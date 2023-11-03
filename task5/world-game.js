@@ -429,22 +429,16 @@ class Human {
     }
 
     static #childbirth = (mom, dad, numberOfChildren = 1) => {
-        //this.#statistic.yearly.born += numberOfChildren;
         const newChildren = [];
         for (let i = 0; i < numberOfChildren; i++) {
-            const lastName = dad.lastName;
             const gender = Human.giveGender();
-            const height = Human.giveHeight(mom.height, dad.height, gender);
-            const eyeColor = Human.giveEyeColor(mom.eyeColor, dad.eyeColor);
-            const hairColor = Human.giveHairColor(mom.hairColor, dad.hairColor);
-            const parentsID = [mom.id, dad.id];
             const options = {
-                lastName,
+                lastName: dad.lastName,
                 gender,
-                height,
-                eyeColor,
-                hairColor,
-                parentsID
+                height: Human.giveHeight(mom.height, dad.height, gender),
+                eyeColor: Human.giveEyeColor(mom.eyeColor, dad.eyeColor),
+                hairColor: Human.giveHairColor(mom.hairColor, dad.hairColor),
+                parentsID: [mom.id, dad.id]
             };
 
             const newChild = new Human(options);
