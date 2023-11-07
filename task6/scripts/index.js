@@ -4,7 +4,7 @@ let currentPlayerIndex; // Индекс текущего игрока
 
 document.getElementById('check-winner-button').addEventListener('click',() => {
     for(let i = 0; i < 4; i++){
-        document.getElementsByClassName('buttons__control')[i].style.opacity = "0";
+        document.getElementsByClassName('buttons__control')[i].style.display = "none";
     }
     const winner = game.checkWinner().name
     document.getElementsByClassName('current-player')[0].innerHTML =`<h1 class="winner">Winner:</br> ${winner}</h1>`
@@ -20,8 +20,8 @@ document.getElementById(`start-game-button`).addEventListener('click', () => {
     // Делаю кнопки видимыми после предыдущей игры
 
     for(let i=0; i < 4; i++){
-        document.getElementsByClassName('buttons__control')[i].style.opacity = "1";
-        document.getElementById(`hit-button-player-${i+1}`).style.opacity='1'
+        document.getElementsByClassName('buttons__control')[i].style.display = "flex";
+        document.getElementById(`hit-button-player-${i+1}`).style.opacity='block'
     }
     // Создаю лог для отображения очередности игры
     document.getElementsByClassName('current-player')[0].innerHTML=`<h3 class="player-goes">Ход игрока:</br> <span id="current-player-name"></span></h3>`
