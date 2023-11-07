@@ -1,279 +1,210 @@
-import {Player} from "./player";
-import {Enemy} from "./enemy";
-import {Barrier} from "./barrier";
-import {Bullet} from "./bullet";
-
+import { Player } from './player';
+import { Enemy } from './enemy';
+import { Barrier } from './barrier';
+import {EnemyBullet, PlayerBullet} from './bullet';
+import {Ability} from "./ability";
 
 class Game {
-    #level
-    #hiScore
-    #player
-    constructor() {
-        this.#player = {
-            player:new Player(),
-            position:[17, 21]
+  #level;
+  #hiScore;
+  #player;
+  #moveDirection;
+  #sizeX;
+  #sizeY;
+  #gameOver;
+  #win;
+  constructor() {
+    this.#player = new Player([17, 21]);
+    this.#level = 1;
+    this.#hiScore = 0;
+    this.#sizeX = 35;
+    this.#sizeY = 22;
+    this.#gameOver = false;
+    this.#moveDirection = 'left';
+    this.battlefield = [];
+    this.#win = false;
+    this.playerBullet = {};
+    this.playerBulletOnBattlefield = false;
+  }
+
+  createBulletPlayerOnBattlefield() {
+    PlayerBullet.createPlayerBullet(this);
+  }
+
+  createBarrierOnBattlefield(positionX, positionY) {
+    if (
+      (positionX > 2 && positionX < 6) ||
+      (positionX > 10 && positionX < 14) ||
+      (positionX > 20 && positionX < 24) ||
+      (positionX > 28 && positionX < 32)
+    ) {
+      return Barrier.createBarrier(positionX, positionY);
+    } else {
+      return {}
+    }
+  }
+
+  createEnemyOnBattlefield(positionX, positionY) {
+    if (
+      positionX > 1 &&
+      positionX < this.#sizeX - 2
+    ) {
+      return Enemy.createEnemy(positionX, positionY, this.#level);
+    } else {
+      return {}
+    }
+  }
+
+  createBattlefield() {
+    for (let y = 0; y < this.sizeY; y++) {
+      let massEnemy = [];
+      for (let x = 0; x < this.sizeX; x++) {
+        if (y > 1 && y < 7) {
+          massEnemy[x] = this.createEnemyOnBattlefield(x, y);
+        } else if (y > 18 && y < 20) {
+          massEnemy[x] = this.createBarrierOnBattlefield(x, y);
+        } else if (
+          y === this.#player.position[1] &&
+          x === this.#player.position[0]
+        ) {
+          massEnemy[x] = { player: this.#player };
+        } else {
+          massEnemy[x] = {};
         }
-        this.#level = 1;
-        this.#hiScore = 0;
-        this.sizeX = 35
-        this.sizeY = 22
-        this.moveDirection = 'left'
-        this.battlefield = []
-        this.playerBullet = false
-        this.playerBulletObj={}
+      }
+      this.battlefield[y] = massEnemy;
     }
+  }
 
-    createEnemyLevel1(positionX,positionY){
-        const enemy = new Enemy(1, { canShoot: true, score: 10, level: 1 });
+  moveEnemyBulletsOnBattlefield(){
+    EnemyBullet.moveEnemyBullets(this)
+  }
 
-        const enemyObj = {
-            enemy,
-            position: [positionX, positionY]
-        };
-
-        return enemyObj
-    }
-
-    createEnemyLevel2(positionX,positionY){
-
-    }
-
-    createEnemyLevel3(positionX,positionY){
-
-    }
-
-    createBulletPlayer(){
-        if( this.playerBullet === false ){
-            const bullet = {
-                bullet: new Bullet(),
-                position:[this.#player.position[0], this.#player.position[1]-1]
-            }
-            this.playerBulletObj = bullet
-            this.battlefield[20][this.#player.position[0]] = bullet;
-            this.playerBullet=true
+  createEnemyBulletsObBattlefield(){
+    for(let y = 0; y < this.sizeY - 1; y++){
+      for(let x = 0; x < this.sizeX - 1; x++){
+        if(this.battlefield[y][x]?.enemy?.canShoot === true) {
+          EnemyBullet.createEnemyBullet(y,x, this)
         }
+      }
     }
+  }
 
-    createEnemy(positionX, positionY){
-        switch (this.#level){
-            case 1:{
-                return this.createEnemyLevel1(positionX, positionY)
-            }
-            case 2:{
-                return this.createEnemyLevel2(positionX, positionY)
-            }
-            case 3:{
-                return this.createEnemyLevel3(positionX, positionY)
-            }
-        }
+  createAbilityOnBattlefield(positionX, positionY, game) {
+    if (Math.random()<0.05) {
+      Ability.createAbilityLive(positionX, positionY, game)
     }
+  }
 
-    createBarrier(positionX, positionY){
-        const barrier =  new Barrier(1)
-
-        const barrierObj = {
-            barrier,
-            position: [positionX, positionY]
-        };
-
-        return barrierObj
+  winGame() {
+    if (this.#level === 5 && Enemy.areAllEnemiesDefeated(this)) {
+      this.#win = true;
     }
+  }
 
-    createBattlefield() {
-        for (let y = 0; y < this.sizeY; y++) {
-            let massEnemy = [];
-            for (let x = 0; x < this.sizeX; x++) {
-                if( y > 1 &&
-                    y < 7 &&
-                    x > 1 &&
-                    x < this.sizeX - 2
-                ){
-                    massEnemy[x] = this.createEnemy(x,y)
-                } else if(
-                    y > 18 &&
-                    y < 20 &&
-                    (
-                        (x > 2 && x < 6) ||
-                        (x > 10 && x < 14) ||
-                        (x > 20 && x < 24) ||
-                        (x > 28 && x < 32)
-                    )
-                ){
+  move() {
+    let renderInterval = setInterval(() => {
+      this.moveEnemyOnBattlefield()
+      this.movePlayerBulletOnBattlefield();
+      this.moveAbilityOnBattlefield()
+      this.createEnemyBulletsObBattlefield()
+      this.moveEnemyBulletsOnBattlefield()
+      if (Enemy.areAllEnemiesDefeated(this)) {
+        this.levelUp();
+      }
+      this.endGame(renderInterval)
+    }, 500);
+  }
 
-                    massEnemy[x] = this.createBarrier(x, y)
+  moveEnemyOnBattlefield() {
+    Enemy.moveEnemy(this);
+  }
 
-                } else if( y === this.#player.position[1] && x === this.#player.position[0] ){
-                    massEnemy[x] = { player:this.#player.player, position:[x,y] }
-                } else {
-                    massEnemy[x] = {
-                        position: [x, y]
-                    };
-                }
-            }
-            this.battlefield[y] = massEnemy;
-        }
+  get win() {
+    return this.#win;
+  }
+
+  deletePlayerBulletOnBattlefield() {
+    PlayerBullet.deletePlayerBullet(this);
+  }
+
+  movePlayerRightOnBattlefield() {
+    Player.movePlayerRight(this);
+  }
+
+  movePlayerLeftOnBattlefield() {
+    Player.movePlayerLeft(this);
+  }
+
+  levelUp() {
+    this.#level += 1;
+    if (this.#level < 5) {
+      this.createBattlefield();
+    } else {
+      this.winGame();
     }
+  }
 
-    move(){
-        setInterval(()=>{
-            //this.isDead()
-            this.moveEnemy()
-            this.movePlayerBullet()
-        },500)
+  movePlayerBulletOnBattlefield() {
+    PlayerBullet.movePlayerBullet(this)
+  }
+
+  moveAbilityOnBattlefield(){
+    Ability.moveAbility(this)
+  }
+
+
+  gameStart() {
+    this.createBattlefield();
+    this.move();
+  }
+
+  endGame(renderInterval) {
+    if(this.#player.lives === 0){
+      this.#gameOver = true;
+      clearInterval(renderInterval)
     }
+  }
 
-    moveEnemy(){
-        if(this.moveDirection ==='right'){
-            if(this.battlefield[6][34]?.enemy){
-                this.moveDirection = 'left'
-            } else {
-                this.moveEnemyRight()
-            }
-        }
-        if(this.moveDirection ==='left'){
-            if(this.battlefield[6][0]?.enemy){
-                this.moveDirection = 'right'
-            } else {
-                this.moveEnemyLeft()
-            }
-        }
-    }
+  updateHiScore(score) {
+    this.#hiScore += score;
+  }
 
-    isDead(){
-        for(let y = 0; y < this.sizeY; y++){
-            for(let x = 0; x < this.sizeY; x++){
-                if(this.battlefield[y][x]?.enemy){
-                    if(this.playerBullet){
-                        if(this.battlefield[y][x].position[0] === this.playerBulletObj?.position[0] && this.battlefield[y][x].position[1] === this.playerBulletObj?.position[1] ){
-                            this.battlefield[y][x] ={
-                                position:[x,y]
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+  get moveDirection() {
+    return this.#moveDirection;
+  }
 
-    moveEnemyRight(){
-        for (let y = 0; y < this.battlefield.length; y++) {
-            let row = this.battlefield[y];
-            for(let x = row.length; x >= 0; x--) {
-                if(row[x]?.enemy){
-                   row[x+1] = row[x]
-                   row[x] = row[x-1]
-                }
-            }
-        }
-    }
+  set moveDirection(moveDirection) {
+    this.#moveDirection = moveDirection;
+  }
 
-    moveEnemyLeft(){
-        for (let y = 0; y < this.battlefield.length; y++) {
-            let row = this.battlefield[y];
-            for(let x = 0; x < row.length; x++) {
-                if(row[x]?.enemy){
-                    row[x-1] = row[x]
-                    row[x] = row[x+1]
-                }
-            }
-        }
-    }
+  get gameOver() {
+    return this.#gameOver;
+  }
 
-    nextLevel(level) {
-        this.#level = level;
-    }
+  get level() {
+    return this.#level;
+  }
 
-    movePlayerRight(){
-        let row = this.battlefield[21];
-        for(let x = row.length; x >= 0; x--) {
-            if(row[x]?.player){
-                if(x<this.sizeX-1){
-                    row[x+1] = row[x]
-                    row[x] = row[x-1]
-                    this.#player.position[0]+=1;
-                }
-            }
-        }
+  get hiScore() {
+    return this.#hiScore;
+  }
 
-    }
+  get player() {
+    return this.#player;
+  }
 
-    movePlayerLeft(){
-        let row = this.battlefield[21];
-        for(let x = 0; x < row.length; x++) {
-            if(row[x]?.player){
-                if(x > 0){
-                    row[x-1] = row[x]
-                    row[x] = row[x+1]
-                    this.#player.position[0]-=1;
-                }
-            }
-        }
+  get sizeX() {
+    return this.#sizeX;
+  }
 
-    }
+  get sizeY() {
+    return this.#sizeY;
+  }
 
-    movePlayerBullet(){
-        if(this.playerBullet===true){
-            const bulletPositionX = this.playerBulletObj.position[0]
-            for (let y = 0; y < this.battlefield.length; y++) {
-                let row = this.battlefield[y][bulletPositionX];
-                if(row?.bullet){
-                    if(this.playerBulletObj.position[1] > 0){
-
-                        if(this.battlefield[y-1][bulletPositionX]?.enemy || this.battlefield[y-1][bulletPositionX]?.barrier){
-                            this.battlefield[y-1][bulletPositionX] = {
-                                position:[bulletPositionX, y]
-                            }
-                            this.battlefield[y][bulletPositionX] = {
-                                position:[bulletPositionX, y]
-                            }
-                            this.playerBulletObj={}
-                            this.playerBullet = false
-                        }
-                        else {
-                            this.battlefield[y-1][bulletPositionX] = this.battlefield[y][bulletPositionX]
-                            this.battlefield[y][bulletPositionX] = {
-                                position:[bulletPositionX, y]
-                            }
-                            this.playerBulletObj.position[1]-=1
-                        }
-
-                    } else {
-                        this.battlefield[y][bulletPositionX] = {
-                            position:[bulletPositionX][y]
-                        }
-                        this.playerBullet=false
-                    }
-                }
-            }
-        }
-    }
-
-    gameStart(){
-        this.createBattlefield()
-        this.move()
-    }
-
-    gameOver(){
-        console.log('Game over')
-    }
-
-    updateHiScore(score) {
-        if (score > this.#hiScore) {
-            this.#hiScore = score;
-        }
-    }
-
-    get level(){
-        return this.#level
-    }
-
-    get hiScore(){
-        return this.#hiScore
-    }
-
-    getPlayerLives(){
-        return this.#player.lives
-    }
+  getPlayerLives() {
+    return this.#player.lives;
+  }
 }
 
-export { Game }
+export { Game };
