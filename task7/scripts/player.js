@@ -1,14 +1,18 @@
 class Player {
   #lives;
-  #position;
-  constructor(position = []) {
+  #startPosition;
+  #weapon
+  constructor(startPosition = []) {
     this.#lives = 3;
-    this.#position = position;
+    this.#weapon = {
+      damage:1
+    }
+    this.#startPosition = startPosition;
   }
 
-  addLive() {
+  addLive(live) {
     if (this.#lives <= 4) {
-      this.#lives += 1;
+      this.#lives += live;
     }
   }
 
@@ -25,7 +29,7 @@ class Player {
         if (x < game.sizeX - 1) {
           row[x + 1] = row[x];
           row[x] = row[x - 1];
-          game.player.position[0] += 1;
+          game.player.startPosition[0] += 1;
         }
       }
     }
@@ -38,18 +42,26 @@ class Player {
         if (x > 0) {
           row[x - 1] = row[x];
           row[x] = row[x + 1];
-          game.player.position[0] -= 1;
+          game.player.startPosition[0] -= 1;
         }
       }
     }
+  }
+
+  get weapon(){
+    return this.#weapon
+  }
+
+  set weapon(newWeapon){
+    this.#weapon = newWeapon
   }
 
   get lives() {
     return this.#lives;
   }
 
-  get position() {
-    return this.#position;
+  get startPosition() {
+    return this.#startPosition;
   }
 }
 

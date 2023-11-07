@@ -75,7 +75,7 @@ function updateDisplay() {
 
         battleField.children[y].children[x].style.backgroundColor = 'gray';
 
-      } else if (game.battlefield[y][x]?.abilityLive) {
+      } else if (game.battlefield[y][x]?.ability) {
 
         battleField.children[y].children[x].style.backgroundColor = '#800000';
 

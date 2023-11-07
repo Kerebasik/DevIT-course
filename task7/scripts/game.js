@@ -64,8 +64,8 @@ class Game {
         } else if (y > 18 && y < 20) {
           massEnemy[x] = this.createBarrierOnBattlefield(x, y);
         } else if (
-          y === this.#player.position[1] &&
-          x === this.#player.position[0]
+          y === this.#player.startPosition[1] &&
+          x === this.#player.startPosition[0]
         ) {
           massEnemy[x] = { player: this.#player };
         } else {

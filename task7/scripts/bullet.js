@@ -17,11 +17,11 @@ class PlayerBullet {
   static createPlayerBullet(game) {
     if (game.playerBulletOnBattlefield === false) {
       const playerBullet = new PlayerBullet({
-        damage: 1,
-        position: [game.player.position[0], game.player.position[1] - 1],
+        damage: game.player.weapon.damage,
+        position: [game.player.startPosition[0], game.player.startPosition[1] - 1],
       });
       game.playerBullet = playerBullet;
-      game.battlefield[20][game.player.position[0]].playerBullet = playerBullet;
+      game.battlefield[20][game.player.startPosition[0]].playerBullet = playerBullet;
       game.playerBulletOnBattlefield = true;
     }
   }
@@ -57,7 +57,7 @@ class PlayerBullet {
           if (game.battlefield[y - 1][bulletPositionX]?.enemy) {
             const enemy = game.battlefield[y - 1][bulletPositionX]?.enemy;
             // Обновляем счет игрока в зависимости от урона пули
-            if (enemy.hp === game.playerBullet.damage) {
+            if (enemy.hp <= game.playerBullet.damage) {
               game.updateHiScore(enemy.score);
               // Удаляем ключ 'enemy' из объекта
               Enemy.deleteEnemyInPosition(game, y-1, bulletPositionX)
