@@ -125,14 +125,20 @@ class Enemy {
     }
   }
 
+  static deleteEnemyInPosition(game, positionY, positionX){
+    delete game.battlefield[positionY][positionX].enemy;
+  }
+
   static moveEnemyLeft(game) {
     for (let y = 0; y < game.battlefield.length; y++) {
       let row = game.battlefield[y];
       for (let x = 0; x < game.sizeX; x++) {
         if (row[x]?.enemy) {
           if (x > 0) {
+
             row[x - 1].enemy = row[x].enemy;
             delete row[x].enemy
+
           }
         }
       }

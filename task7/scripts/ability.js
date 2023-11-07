@@ -12,6 +12,15 @@ class Ability {
     }
   }
 
+  static deleteAbilityInPosition(game, positionY, positionX){
+    delete game.battlefield[positionY][positionX].abilityLive
+  }
+
+  static stepForward(game, positionY, positionX){
+    game.battlefield[positionY][positionX].abilityLive = game.battlefield[positionY-1][positionX].abilityLive
+    Ability.deleteAbilityInPosition(game, positionY-1, positionX)
+  }
+
   static moveAbility(game){
     for(let x = game.sizeX - 1; x > 0; x--){
       for(let y = game.sizeY - 1; y > 0; y--){
@@ -20,16 +29,14 @@ class Ability {
 
           if(game.battlefield[y][x]?.player){
             game.player.addLive()
-            delete game.battlefield[y-1][x].abilityLive
-
+            Ability.deleteAbilityInPosition(game, y-1, x)
           } else {
-            game.battlefield[y][x].abilityLive = game.battlefield[y-1][x].abilityLive
-            delete game.battlefield[y-1][x].abilityLive
-
+            Ability.stepForward(game, y, x)
           }
 
           if(y===21 && !!game.battlefield[y][x].abilityLive){
             delete game.battlefield[y][x].abilityLive
+            Ability.stepForward(game, y, x)
           }
         }
       }

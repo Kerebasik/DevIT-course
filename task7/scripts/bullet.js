@@ -1,3 +1,6 @@
+import {Barrier} from "./barrier";
+import {Enemy} from "./enemy";
+
 class PlayerBullet {
   #position;
   #damage;
@@ -36,7 +39,7 @@ class PlayerBullet {
         // Удаляем пулю при достижении границы верхней
         if (y === 1 && row?.playerBullet) {
           // Удаляем ключ 'playerBullet' из объекта
-          delete game.battlefield[y][bulletPositionX].playerBullet;
+          PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
           game.deletePlayerBulletOnBattlefield();
         }
 
@@ -45,8 +48,8 @@ class PlayerBullet {
           // Если выше есть враг или барьер
           if (game.battlefield[y - 1][bulletPositionX]?.barrier) {
             // Удаляем ключ 'barrier' из объекта
-            delete game.battlefield[y - 1][bulletPositionX].barrier;
-            delete game.battlefield[y][bulletPositionX].playerBullet;
+            Barrier.deleteBarrier(game, y-1, bulletPositionX)
+            PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
             game.deletePlayerBulletOnBattlefield();
             return;
           }
@@ -57,26 +60,34 @@ class PlayerBullet {
             if (enemy.hp === game.playerBullet.damage) {
               game.updateHiScore(enemy.score);
               // Удаляем ключ 'enemy' из объекта
-              delete game.battlefield[y - 1][bulletPositionX].enemy;
-              delete game.battlefield[y][bulletPositionX].playerBullet;
+              Enemy.deleteEnemyInPosition(game, y-1, bulletPositionX)
+              PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
               game.deletePlayerBulletOnBattlefield();
               game.createAbilityOnBattlefield(bulletPositionX, y - 1, game);
 
             } else {
               enemy.hp -= 1;
               // Удаляем ключ 'playerBullet' из объекта
-              delete game.battlefield[y][bulletPositionX].playerBullet;
+              PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
               game.deletePlayerBulletOnBattlefield();
             }
 
             return;
           }
           // Присваиваем значение playerBullet в верхней строке, затем удаляем его из текущей строки
-          game.battlefield[y - 1][bulletPositionX] = game.battlefield[y][bulletPositionX];
-          game.battlefield[y][bulletPositionX] = {}
+          PlayerBullet.stepForward(game, y, bulletPositionX)
         }
       }
     }
+  }
+
+  static stepForward(game, positionY, positionX){
+    game.battlefield[positionY - 1][positionX] = game.battlefield[positionY][positionX];
+    game.battlefield[positionY][positionX] = {}
+  }
+
+  static deletePlayerBulletInPosition(game, positionY, positionX){
+    delete game.battlefield[positionY][positionX].playerBullet;
   }
 
 
@@ -109,6 +120,15 @@ class EnemyBullet {
     this.#position = position;
   }
 
+  static deleteBulletInPosition(game, positionY, positionX){
+    delete game.battlefield[positionY][positionX]?.enemyBullet
+  }
+
+  static stepForward(game, positionY, positionX){
+    game.battlefield[positionY][positionX].enemyBullet = game.battlefield[positionY-1][positionX].enemyBullet
+    delete game.battlefield[positionY-1][positionX].enemyBullet
+  }
+
   static moveEnemyBullets(game){
     for(let x = game.sizeX - 1; x > 0; x--){
       for(let y = game.sizeY - 1; y > 0; y--){
@@ -117,25 +137,23 @@ class EnemyBullet {
           if(game.battlefield[y][x]?.player){
 
             game.battlefield[y][x]?.player.damageLives()
-            delete game.battlefield[y-1][x]?.enemyBullet
-
+            EnemyBullet.deleteBulletInPosition(game, y-1, x)
           }
 
           if(game.battlefield[y-1][x]?.barrier){
 
-            delete game.battlefield[y-1][x]?.enemyBullet
-            delete game.battlefield[y-1][x]?.barrier
+            EnemyBullet.deleteBulletInPosition(game, y-1, x)
+            Barrier.deleteBarrier(game, y-1, x)
 
           }
 
           if(game.battlefield[20][x].enemyBullet){
 
-            delete game.battlefield[20][x].enemyBullet
+            EnemyBullet.deleteBulletInPosition(game, 20, x)
 
           }
 
-          game.battlefield[y][x].enemyBullet = game.battlefield[y-1][x].enemyBullet
-          delete game.battlefield[y-1][x].enemyBullet
+          EnemyBullet.stepForward(game, y, x)
 
         }
       }

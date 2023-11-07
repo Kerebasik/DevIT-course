@@ -11,6 +11,10 @@ class Barrier {
       position: [positionX, positionY],
     };
   }
+
+  static deleteBarrier(game, positionY, positionX){
+    delete game.battlefield[positionY][positionX].barrier;
+  }
 }
 
 export { Barrier };
