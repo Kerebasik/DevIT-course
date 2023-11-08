@@ -10,17 +10,22 @@ class PlayerBullet {
   }
 
   static deletePlayerBullet(game) {
+    //Удаляем пулю игрока с поля. Удаляем её объект на поле и указываем что пули игрока больше нет
     game.playerBullet = {};
     game.playerBulletOnBattlefield = false;
   }
 
   static createPlayerBullet(game) {
+    //Создание пули на поле боя если её нет
     if (game.playerBulletOnBattlefield === false) {
       const playerBullet = new PlayerBullet({
         damage: game.player.weapon.damage,
         position: [game.player.startPosition[0], game.player.startPosition[1] - 1],
       });
+      //Делаем объект пули на поле боя
+      //Указываем, что пуля есть на поле боя
       game.playerBullet = playerBullet;
+      //Пуля создается перед игроком по оси Y
       game.battlefield[20][game.player.startPosition[0]].playerBullet = playerBullet;
       game.playerBulletOnBattlefield = true;
     }
@@ -49,32 +54,41 @@ class PlayerBullet {
           if (game.battlefield[y - 1][bulletPositionX]?.barrier) {
             // Удаляем ключ 'barrier' из объекта
             Barrier.deleteBarrier(game, y-1, bulletPositionX)
+            // Удаляем пулю игрока в блоке
             PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
+            // Ставим что пули игрока нет на поле боя
             game.deletePlayerBulletOnBattlefield();
             return;
           }
 
+          // если перед пулей игрока есть враг, то
           if (game.battlefield[y - 1][bulletPositionX]?.enemy) {
             const enemy = game.battlefield[y - 1][bulletPositionX]?.enemy;
-            // Обновляем счет игрока в зависимости от урона пули
+            // Проверяем хп врага если они равны или меньше урону пули, то
             if (enemy.hp <= game.playerBullet.damage) {
+              // даем игроку очки за убитого врага
               game.updateHiScore(enemy.score);
-              // Удаляем ключ 'enemy' из объекта
+              // Удаляем ключ 'enemy' из объекта battlefield на позиции
               Enemy.deleteEnemyInPosition(game, y-1, bulletPositionX)
+              // Удаляем пулю игрока с поля боя
               PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
+              // Указываем что пули нет на поле боя
               game.deletePlayerBulletOnBattlefield();
+              // создаем улучшение на мести врага
               game.createAbilityOnBattlefield(bulletPositionX, y - 1, game);
 
             } else {
-              enemy.hp -= 1;
+              //если урон пули врага меньше чем хп, то мы отнимаем из хп урон пули
+              enemy.hp -= game.playerBullet.damage;
               // Удаляем ключ 'playerBullet' из объекта
               PlayerBullet.deletePlayerBulletInPosition(game, y, bulletPositionX)
+              // Указываем что пули нет на поле боя
               game.deletePlayerBulletOnBattlefield();
             }
 
             return;
           }
-          // Присваиваем значение playerBullet в верхней строке, затем удаляем его из текущей строки
+          // Присваиваем значение playerBullet в верхнюю строку, затем удаляем его из текущей строки
           PlayerBullet.stepForward(game, y, bulletPositionX)
         }
       }
@@ -82,16 +96,19 @@ class PlayerBullet {
   }
 
   static stepForward(game, positionY, positionX){
+    // Присваиваем объект из строки нижу в строку которая выше
     game.battlefield[positionY - 1][positionX] = game.battlefield[positionY][positionX];
     game.battlefield[positionY][positionX] = {}
   }
 
   static deletePlayerBulletInPosition(game, positionY, positionX){
+    // удаление пули с поля боя
     delete game.battlefield[positionY][positionX].playerBullet;
   }
 
 
   static deleteBulletInPosition(object, context) {
+    // Удаление пули игрока в указанной позиции
     if (object?.playerBullet) {
       context.battlefield[object.playerBullet.position[1]][object.playerBullet.position[0] + 1] = {
         position: [
@@ -121,40 +138,43 @@ class EnemyBullet {
   }
 
   static deleteBulletInPosition(game, positionY, positionX){
+    //Удаляем пулю врага в определенной позициии
     delete game.battlefield[positionY][positionX]?.enemyBullet
   }
 
   static stepForward(game, positionY, positionX){
+    // Присваивание пули врага на линию ниже, а с линии выше удаляем
     game.battlefield[positionY][positionX].enemyBullet = game.battlefield[positionY-1][positionX].enemyBullet
     delete game.battlefield[positionY-1][positionX].enemyBullet
   }
 
   static moveEnemyBullets(game){
+    // Проходи по полю сражения
     for(let x = game.sizeX - 1; x > 0; x--){
       for(let y = game.sizeY - 1; y > 0; y--){
+        // нашли пулю врага
         if(game.battlefield[y-1][x]?.enemyBullet){
-
+          //если на пути врага игрок, то
           if(game.battlefield[y][x]?.player){
-
+            //отнимаем у игрока жизнь
             game.battlefield[y][x]?.player.damageLives()
+            // удаляем пулю врага с позиции
             EnemyBullet.deleteBulletInPosition(game, y-1, x)
           }
 
+          // Если на пути барьер
           if(game.battlefield[y-1][x]?.barrier){
-
+            //удаляем барьер на позиции и пулю врага
             EnemyBullet.deleteBulletInPosition(game, y-1, x)
             Barrier.deleteBarrier(game, y-1, x)
-
           }
 
+          // удаление пули врага на краю карты
           if(game.battlefield[20][x].enemyBullet){
-
             EnemyBullet.deleteBulletInPosition(game, 20, x)
-
           }
-
+          // шаг пули ниже
           EnemyBullet.stepForward(game, y, x)
-
         }
       }
     }

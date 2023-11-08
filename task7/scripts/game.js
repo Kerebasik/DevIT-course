@@ -45,6 +45,8 @@ class Game {
   }
 
   createEnemyOnBattlefield(positionX, positionY) {
+    //Если попадает в диапазон, то возвращает врага, если нет, то пустой объект
+
     if (
       positionX > 1 &&
       positionX < this.#sizeX - 2
@@ -56,6 +58,8 @@ class Game {
   }
 
   createBattlefield() {
+    //Проходимся по полю сражения и в зависимости от положения по оси Y призываем в ячейку врага или барьер или указываем что там игрок
+
     for (let y = 0; y < this.sizeY; y++) {
       let massEnemy = [];
       for (let x = 0; x < this.sizeX; x++) {
@@ -72,6 +76,7 @@ class Game {
           massEnemy[x] = {};
         }
       }
+      //Добавляем по оси Х элементы
       this.battlefield[y] = massEnemy;
     }
   }
