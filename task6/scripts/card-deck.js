@@ -29,6 +29,20 @@ class CardDeck {
         return this.#deck.pop();
     }
 
+    static getCardValue(card) {
+        const rank = card.rank;
+        let rankMap = new Map([
+            ["Валет", 10],
+            ["Дама", 10],
+            ["Король", 10],
+            ["Туз", 1]
+        ]);
+        if(rankMap.has(rank)){
+            return rankMap.get(rank)
+        }
+        return parseInt(rank)
+    }
+
 
 }
 

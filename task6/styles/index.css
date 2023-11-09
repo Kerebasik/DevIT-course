@@ -14,7 +14,7 @@ body{
 }
 
 .buttons__control{
-    display: none;
+    display: block;
     flex-direction: column;
     gap: 5px;
 }
