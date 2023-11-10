@@ -7,6 +7,7 @@ class Game {
     #gameOver;
     #playersMove;
     #currentPlayerIndex;
+    #start
 
     constructor(players= [new Player('Player 1'),
         new Player('Player 2'),
@@ -18,6 +19,7 @@ class Game {
         this.#playersMove = 0;
         this.#gameOver = false;
         this.#currentPlayerIndex = 0;
+        this.#start = false
     }
 
     // Метод для перехода к следующему игроку, учитывая значение на руке и флаг "пасс"
@@ -42,6 +44,7 @@ class Game {
 
     // Метод для перехода к следующему игроку, учитывая значение на руке и флаг "пасс"
     playerMove() {
+        console.log(this.#players)
         const currentPlayer = this.#players[this.#currentPlayerIndex];
         if (!currentPlayer.pass && currentPlayer.player.getHandValue() <= 21) {
             const card = this.#deck.drawCard();
@@ -109,9 +112,6 @@ class Game {
         })
     }
 
-    checkPlayer(){
-        return this.#players[this.#playersMove]?.player?.name
-    }
 
     dealInitialCards() {
         for (const item of this.#players) {
@@ -121,11 +121,18 @@ class Game {
     }
 
     startGame() {
-        this.start = true
+        this.#start = true
         this.#deck.shuffle();
         this.dealInitialCards();
     }
 
+    get start(){
+        return this.#start
+    }
+
+    set start(status){
+        this.#start = status
+    }
 
     set playersMove(newStep){
         this.#playersMove = newStep

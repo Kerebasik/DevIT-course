@@ -8,7 +8,7 @@ document.getElementById(`start-game-button`).addEventListener('click', () => {
 
     document.getElementsByClassName('current-player')[0].innerHTML=`<h3 class="player-goes">Ход игрока:</br> <span id="current-player-name"></span></h3>`
     const currentPlayerName = document.getElementById('current-player-name');
-    currentPlayerName.textContent = game.checkPlayer();
+    currentPlayerName.textContent = game.getCurrentPlayerName();
 
     updatePlayerDisplay()
 });
