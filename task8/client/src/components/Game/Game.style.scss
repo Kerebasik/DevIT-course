@@ -1,0 +1,136 @@
+body{
+    background-color: #0A5138;
+    padding: 20px;
+}
+
+.player__title{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.player__title p{
+    color: red;
+}
+
+.current-player{
+    font-size: 26px;
+    color: red;
+}
+.buttons__control{
+    display: block;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.buttons h3{
+    color: white;
+}
+
+.player__hand{
+    color: white;
+}
+
+.blackjack-table{
+    height: 100%;
+    width: 100%;
+    border: 5px dashed  #BFC96C;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+}
+
+.panel{
+    height: 100%;
+    width: 100%;
+    flex: 1 1 25%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-left:  5px dashed  #BFC96C;
+}
+
+.title{
+    width: 100%;
+    color: white;
+    border-bottom: 5px dashed  #BFC96C;
+}
+
+.players{
+    height: 100%;
+    flex: 1 1 75%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.players__row{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content: center;
+    height: 100%;
+}
+
+.players__row .player{
+    padding: 10px;
+    border: 3px solid #5e5373;
+    flex: 0 1 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player h3{
+    color: white;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.menu{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+button{
+    width: 100%;
+    font-size: 18px;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.winner{
+    color: white;
+}
+
+.player-goes{
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .buttons{
+        overflow-y: scroll;
+    }
+}
+
+@media (max-width: 426px) {
+    .blackjack-table{
+        flex-direction: column;
+    }
+    .buttons{
+        flex-direction: row;
+        gap:5px;
+    }
+    .panel{
+        border-left: none;
+        border-top: 5px dashed  #BFC96C;
+    }
+}
