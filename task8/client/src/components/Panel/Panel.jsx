@@ -1,7 +1,7 @@
 import React from "react";
 import { CustomButton } from "../Button/Button";
 
-const Panel = ({gameStart, handleStartGame, handleAddCardToPlayer, handlePlayerPassed, currentPlayerIndex}) =>{
+const Panel = ({gameStart, handleStartGame, handlePlayerMove, handlePlayerPass, currentPlayer}) =>{
 
     return(
         <>
@@ -14,12 +14,12 @@ const Panel = ({gameStart, handleStartGame, handleAddCardToPlayer, handlePlayerP
                         gameStart && // отображаем кнопки при начале игры
                         <>
                             <div className="current-player">
-                                Ходит: Player {currentPlayerIndex+1}
+                                Ходит: {currentPlayer}
                             </div>
 
                             <div className="buttons__control">
-                                <CustomButton  name={'Взять'} onClick={handleAddCardToPlayer} />
-                                <CustomButton  name={'Пас'} onClick={handlePlayerPassed}/>
+                                <CustomButton  name={'Взять'} onClick={handlePlayerMove} />
+                                <CustomButton  name={'Пас'} onClick={handlePlayerPass}/>
                             </div>
                         </>
                     }

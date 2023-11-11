@@ -8,6 +8,10 @@ class Player {
         this.#hand = [];
     }
 
+    handIsClear() {
+        return this.#hand.length === 0
+    }
+
     addCard(card) {
         this.#hand.push(card);
     }
