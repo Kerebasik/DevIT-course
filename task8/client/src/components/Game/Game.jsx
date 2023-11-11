@@ -17,7 +17,6 @@ const GameBlackJack = ()=>{
     const [start, setStart] = useState(game.start)
 
     const handleStartGame = ()=>{
-
         game.startGame()
         setStart(game.start)
         setPlayers([...game.players])

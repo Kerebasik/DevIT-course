@@ -9,6 +9,10 @@ const Player = ({player}) => {
                     player.over && // отображаем в случае перебора
                     <p>Перебор</p>
                 }
+                {
+                    player.pass && // отображаем в случае перебора
+                    <p>Пасс</p>
+                }
                 {/*         отображаем количество баллов на руках         */}
                 <p>{player.player.getHandValue()}</p>
             </div>
