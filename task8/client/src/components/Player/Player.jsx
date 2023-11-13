@@ -1,4 +1,5 @@
 import React from "react";
+import './Player.style.scss'
 
 const Player = ({player}) => {
     return(

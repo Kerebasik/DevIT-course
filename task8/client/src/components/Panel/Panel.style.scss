@@ -1,0 +1,42 @@
+.panel{
+  height: 100%;
+  width: 100%;
+  flex: 1 1 25%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-left:  5px dashed  #BFC96C;
+}
+
+.menu{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.buttons{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.current-player{
+  font-size: 26px;
+  color: red;
+}
+
+.buttons__control{
+  display: block;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.player__title{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.player__title p{
+  color: red;
+}

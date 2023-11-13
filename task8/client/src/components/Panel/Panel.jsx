@@ -1,5 +1,6 @@
 import React from "react";
 import { CustomButton } from "../Button/Button";
+import './Panel.style.scss'
 
 const Panel = ({gameStart, handleStartGame, handlePlayerMove, handlePlayerPass, currentPlayer}) =>{
 

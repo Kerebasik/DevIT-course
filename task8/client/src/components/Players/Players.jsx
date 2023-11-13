@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Player} from "../Player/Player";
+import './Players.style.scss'
 
 const Players = ({players, gameStart}) => {
 
