@@ -1,0 +1,21 @@
+.home{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px dashed  #BFC96C;
+  &__content{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    &__panel{
+      form{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+.textField__wrapper{
+  .textField__input{
+    border: 2px dashed #BFC96C;
+    border-radius: 8px;
+    background: none;
+  }
+
+  .textField__input_error{
+    border: 2px dashed #cb0000;
+    border-radius: 8px;
+    background: none;
+  }
+
+  .textField{
+    width: 100%;
+    font-size: 16px;
+    padding: 8px;
+    background: none;
+    color: #BFC96C;
+    text-align: center;
+  }
+
+  .helperText{
+    color: #BFC96C;
+    &_error{
+      color: #cb0000;
+    }
+  }
+
+}
+
+

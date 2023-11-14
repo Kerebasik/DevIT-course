@@ -4,3 +4,6 @@
 */node_modules
 */*/node_modules
 */*/.idea
+task8/client/node_modules
+
+*/*/.env
