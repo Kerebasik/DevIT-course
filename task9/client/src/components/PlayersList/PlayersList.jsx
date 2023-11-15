@@ -1,34 +1,29 @@
-import React, from "react";
-import {Player} from '../../services/player'
+import React from "react";
 import {PlayerItem} from "../Player/Player";
 import './PlayersList.style.scss'
 import {Title} from "../Title/Title";
-import {useParams} from "react-router-dom";
+import {useSelector} from "react-redux";
 
-const PlayersList = ({players=[
-    new Player('Player 1'),
-    new Player('Player 2'),
-    new Player('Player 3'),
-    new Player('Player 4')
-], gameStart}) => {
-    const {id} = useParams()
+const PlayersList = () => {
+
+    const {game} = useSelector(state => state.gameReducer)
 
     return(
         <div className={'players'}>
             <div className={'players__title'}>
-                <Title>Room: {id}</Title>
+                <Title>Room: {game?.id}</Title>
             </div>
-            <div>
-                <div className="players__row">
-                    {
-                        players?.map((player, index) => {
-                            return <PlayerItem
-                                key={ Date.now()+index} // уникальный ключ
-                                player={player} // пробрасываем игрока
-                            />
-                        })
-                    }
-                </div>
+
+            <div className="players__row">
+                {
+                    game?.players?.map((player, index) => {
+                        return <PlayerItem
+                            key={ Date.now()+index} // уникальный ключ
+                            player={player} // пробрасываем игрока
+                            index={index+1}
+                        />
+                    })
+                }
             </div>
         </div>
     )

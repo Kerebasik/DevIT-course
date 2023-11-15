@@ -2,11 +2,11 @@ import React from "react";
 import {Title} from "../../components/Title/Title";
 import {Button} from "../../components/Button/Button";
 import {TextField} from "../../components/TextField/TextField";
-
-import './Home.style.scss'
 import {Controller, useForm} from "react-hook-form";
 import {useNavigate} from "react-router-dom";
 import {Router} from "../../constants/router";
+import {GameHttpService} from "../../services/gameHttpService";
+import './Home.style.scss'
 
 
 const Home = ()=>{
@@ -23,22 +23,16 @@ const Home = ()=>{
     const roomId = watch('roomId');
 
     const handleNewRoomOnClick = ()=>{
-        new Promise((resolve)=>{
-            resolve()
-        }).then(()=>{
-            navigate(Router.ROOM+'/122')
-        })
+        GameHttpService.createGame()
+            .then(()=>{
+                navigate(Router.ROOM)
+            })
     }
 
     const onSubmit = ()=>{
-        new Promise((resolve)=>{
-            console.log(roomId)
-            resolve()
-        })
+        GameHttpService.joinGame(roomId)
             .then(()=>{
-                navigate(Router.ROOM+'/121')
-            })
-            .catch(()=>{
+                navigate(Router.ROOM)
             })
             .finally(()=>{
                 reset()
@@ -72,7 +66,6 @@ const Home = ()=>{
                                    placeholder={'Введите токен комнаты'}/>
                             }
                         }/>
-
                         <Button type={'submit'}>Войти в комнату</Button>
                     </form>
                 </div>

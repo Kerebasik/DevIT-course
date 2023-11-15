@@ -1,10 +1,11 @@
 import React from "react";
+import './Player.style.scss'
 
-const PlayerItem = ({player}) => {
+const PlayerItem = ({player, index}) => {
     return(
         <div className="player">
             <div className="player__title">
-                <h3> {player?.player?.name}</h3>
+                <h3>Player {index}</h3>
                 {
                     player?.over && // отображаем в случае перебора
                     <p>Перебор</p>
@@ -14,7 +15,7 @@ const PlayerItem = ({player}) => {
                     <p>Пасс</p>
                 }
                 {/*         отображаем количество баллов на руках         */}
-                <p>{player?.player?.getHandValue()}</p>
+                <p>{}</p>
             </div>
 
             <div className="player__hand">
