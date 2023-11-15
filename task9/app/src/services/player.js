@@ -3,6 +3,7 @@ import {CardDeck} from "./card-deck.js";
 class Player {
     #name
     #hand
+    #ready
     constructor(name) {
         this.#name = name;
         this.#hand = [];
@@ -29,6 +30,14 @@ class Player {
         }
 
         return value;
+    }
+
+    getAllProperties(){
+        return {
+            hand:this.#hand,
+            name:this.#name,
+            ready:this.#ready
+        }
     }
 
 

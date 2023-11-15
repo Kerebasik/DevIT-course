@@ -8,7 +8,7 @@ class Game {
     #start
 
     constructor(players) {
-        this.#players = this.initialPlayers([players]);
+        this.#players = Game.initialPlayers([players]);
         this.#deck = new CardDeck();
         this.#gameOver = false;
         this.#currentPlayerIndex = 0;
@@ -16,7 +16,7 @@ class Game {
     }
 
     addPlayer(newPlayer){
-        this.#players.push(this.initialPlayers(newPlayer))
+        this.#players.push(Game.initialPlayers(newPlayer))
     }
 
     // Метод для перехода к следующему игроку, учитывая значение на руке и флаг "пасс"
@@ -71,13 +71,13 @@ class Game {
         this.nextPlayer(); // Переход к следующему игроку
     }
 
-    initialPlayers(players = []){
+    static initialPlayers(players = []){
         return players.map((player, index) => {
             return {
-                id: index,
                 player,
                 pass: false,
-                over: false
+                over: false,
+                ready: false
             }
         })
     }
@@ -117,6 +117,26 @@ class Game {
         this.#start = true
         this.#deck.shuffle();
         this.dealInitialCards();
+    }
+
+    getAllProperties(){
+
+        const playersInfo = this.#players.map((item)=>{
+            return {
+                player: item.player.getAllProperties(),
+                pass: item.pass,
+                over: item.over,
+                ready: item.ready
+            }
+        })
+
+        return{
+            players:playersInfo,
+            deck:this.#deck.deck,
+            gameOver:this.#gameOver,
+            currentPlayerIndex: this.#currentPlayerIndex,
+            start:this.#start
+        }
     }
 
     get start(){

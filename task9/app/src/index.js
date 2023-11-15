@@ -4,6 +4,8 @@ import {MongoClient} from "mongodb";
 import * as path from "path"
 import * as dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+import cors from 'cors'
+
 dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,6 +17,7 @@ const DB_URL = String(process.env.DB_URL);
 const app = express();
 const mongoDB = new MongoClient(DB_URL)
 
+app.use(cors())
 app.use(express.static(path.resolve( __dirname, '..', 'public', 'static')));
 app.use(express.json())
 
@@ -24,16 +27,13 @@ app.get('/ping',(req, res)=>{
     res.json({message:"pong"})
 })
 
-app.get('*', (req, res) => {
+app.get("*", (req, res) => {
     try {
-        res.render('index');
-    } catch (e){
+        res.sendFile(path.resolve( __dirname, '..', 'public', 'static', 'index.html'));
+    } catch (e) {
         console.log(e)
-        res.status(500).send('Internal Server Error');
     }
 });
-
-
 
 const start = async () => {
     try {
