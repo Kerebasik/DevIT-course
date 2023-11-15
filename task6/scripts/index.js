@@ -28,6 +28,10 @@ function updatePlayerDisplay(){
         currentPlayerName.textContent = game.getCurrentPlayerName();
         for(let i = 0; i < game.players.length; i++ ){
             const playerDisplay = document.getElementById(`player-${i + 1}-hand`);
+            const playerLog = document.getElementById(`player-${i+1}-log`)
+            if(game.players[i].player.getHandValue()>21){
+                playerLog.innerText = 'Перебор'
+            }
             playerDisplay.innerHTML = `<h2>(Сумма очков: ${game.players[i].player.getHandValue()})</h2>`; // Лог суммы очков каждого игрока
             playerDisplay.innerHTML += game.players[i].player.hand.map(card => `<div>${card.rank} ${card.suit}</div>`).join(''); // Какие карты на руке у игрока
         }

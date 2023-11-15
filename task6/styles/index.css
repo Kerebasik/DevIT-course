@@ -14,9 +14,9 @@ body{
 }
 
 .buttons__control{
-    display: block;
+    display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
 }
 
 .buttons h3{

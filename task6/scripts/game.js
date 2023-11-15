@@ -38,13 +38,12 @@ class Game {
         }
 
         // Если не найдено допустимых игроков, игра завершена
-        this.#gameOver = true;
+        this.gameEnd()
     }
 
 
     // Метод для перехода к следующему игроку, учитывая значение на руке и флаг "пасс"
     playerMove() {
-        console.log(this.#players)
         const currentPlayer = this.#players[this.#currentPlayerIndex];
         if (!currentPlayer.pass && currentPlayer.player.getHandValue() <= 21) {
             const card = this.#deck.drawCard();
@@ -53,10 +52,10 @@ class Game {
             // Если значение на руке игрока превысило 21, игрок автоматически делает "пасс"
             if (currentPlayer.player.getHandValue() > 21) {
                 currentPlayer.pass = true;
+                currentPlayer.over = true;
             }
         }
 
-        this.checkStep();// Проверка шага
         this.nextPlayer();// Переход к следующему игроку
     }
 
@@ -71,34 +70,7 @@ class Game {
         // Получаем общее количество игроков
         const currentPlayer = this.#players[this.#currentPlayerIndex];
         currentPlayer.pass = true;
-        this.checkStep();  // Проверка шага
         this.nextPlayer(); // Переход к следующему игроку
-
-        // Если все игроки сделали "пасс", находим игрока с наилучшим значением на руке
-        if (this.#players.every((player) => player.pass === true)) {
-            const playerWithClosestHand = this.#players
-                .filter((player) => player.player.getHandValue() <= 21)
-                .reduce((closest, player) =>
-                    player.player.getHandValue() > closest.player.getHandValue()
-                        ? player
-                        : closest
-                );
-            alert(`Победитель: ${playerWithClosestHand.player.name}`);
-            this.#gameOver = true;
-        }
-    }
-
-    checkStep(){
-        if(this.#playersMove < this.#players.length){
-            if(this.#playersMove === this.#players.length){
-                this.#players = this.#players.filter((item) => {
-                    return item.pass === false && item.player.getHandValue()<=21
-                })
-                this.#playersMove = 0
-            }else{
-                this.#playersMove += 1;
-            }
-        }
     }
 
     initialPlayers(players = []){
@@ -112,6 +84,22 @@ class Game {
         })
     }
 
+    closestTo21(){
+        const winner = this.#players.filter((player) => player.player.getHandValue() <= 21)
+        winner.sort((a, b)=> a.player.getHandValue() - b.player.getHandValue() )
+        return winner.at(-1)
+    }
+
+    gameEnd(){
+        // если каждый игрок пасс, то проводим конец игры
+        if (this.#players.every((player) => player.pass === true)) {
+            this.#gameOver = true
+            this.#start = false
+            const winner = this.closestTo21()
+            alert(winner?.player?.name || 'Ничья')
+        }
+
+    }
 
     dealInitialCards() {
         for (const item of this.#players) {
