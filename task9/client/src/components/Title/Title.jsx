@@ -4,7 +4,8 @@ import './Title.style.scss'
 const Title = ({children, size= 36})=>{
     const sizeMap = new Map([
         [108,'size-108'],
-        [36,'size-36']
+        [36,'size-36'],
+        [18, 'size-18']
     ])
 
     return(

@@ -6,9 +6,6 @@ class GameHttpService {
             .then((response) => {
                 return response.data
             })
-            .catch((error)=>{
-                console.error(error)
-            })
     }
 
     static joinGame = (roomId) =>{
@@ -16,13 +13,24 @@ class GameHttpService {
             .then((response)=>{
                 return response.data
             })
-            .catch((error)=>{
-                console.error(error)
+    }
+
+    static readyToGame = () =>{
+        return axiosInstance.post('/ready-to-game')
+            .then((response)=>{
+                return response.data
             })
     }
 
     static getGame = () =>{
         return axiosInstance.post('/game')
+            .then((response)=>{
+                return response.data
+            })
+    }
+
+    static playerTurn = (playerTurn) =>{
+        return axiosInstance.post(`/turn?action=${playerTurn}`)
             .then((response)=>{
                 return response.data
             })

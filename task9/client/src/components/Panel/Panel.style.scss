@@ -7,4 +7,16 @@
   flex-direction: column;
   justify-content: space-between;
   border-left:  5px dashed  #BFC96C;
+
+  &__log{
+    padding: 5px;
+    p{
+      margin: 5px 0;
+      line-height: 20px;
+    }
+    color: white;
+    border:  2px dashed  #BFC96C;
+    height: 150px;
+    overflow-y: scroll;
+  }
 }

@@ -8,3 +8,8 @@
   border-radius: 8px;
   background: none;
 }
+
+.customButton:disabled{
+  color: #a9a9a9;
+  border: 2px dashed #a9a9a9;
+}
