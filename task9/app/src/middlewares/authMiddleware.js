@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import {TokenService} from "../services/tokenService.js";
+import {serverStatus} from "../constants/serverStatus.js";
 
 
 const secretKey = process.env.ACCESS_TOKEN_SIGNATURE
@@ -11,10 +13,10 @@ const authMiddleware = (req, res, next) => {
         const token = req.headers?.authorization.split(' ')[1]
 
         if(!token){
-            return res.status(401).json({message:"Токен отсутствует"})
+            return res.status(serverStatus.NOT_AUTH).json({message:"Токен отсутствует"})
         }
 
-        const  decode = jwt.verify(token,`${secretKey}`)
+        const decode = TokenService.getPayloadFromToken(token)
 
         req.userId = decode.userId;
         req.roomId = decode.roomId;
@@ -22,7 +24,7 @@ const authMiddleware = (req, res, next) => {
         return next()
     } catch (e){
         console.log(e)
-        return res.status(401).json({ message: "Ошибка аутентификации" });
+        return res.status(serverStatus.NOT_AUTH).json({ message: "Ошибка аутентификации" });
     }
 }
 
