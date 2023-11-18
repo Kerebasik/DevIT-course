@@ -25,8 +25,8 @@ class CardDeck {
         }
     }
 
-    drawCard() {
-        return this.#deck.pop();
+    static drawCard(deck) {
+        return deck.pop();
     }
 
     static getCardValue(card) {

@@ -3,28 +3,23 @@ import {CardDeck} from "./card-deck.js";
 class Player {
     #name
     #hand
-    #ready
     constructor(name) {
         this.#name = name;
         this.#hand = [];
     }
 
-    handIsClear() {
-        return this.#hand.length === 0
+    static handIsClear(hand) {
+        return hand.length === 0
     }
 
-    addCard(card) {
-        this.#hand.push(card);
+    static addCard(hand, card) {
+        return hand.push(card);
     }
 
-    clearHand() {
-        this.#hand = [];
-    }
-
-    getHandValue() {
+    static getHandValue(hand) {
         let value = 0;
 
-        for (const card of this.hand) {
+        for (const card of hand) {
             const cardValue = CardDeck.getCardValue(card);
             value += cardValue;
         }
@@ -36,11 +31,8 @@ class Player {
         return {
             hand:this.#hand,
             name:this.#name,
-            ready:this.#ready
         }
     }
-
-
 
     get name(){
         return this.#name
