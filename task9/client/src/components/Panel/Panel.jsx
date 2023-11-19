@@ -6,15 +6,17 @@ import {Button} from "../Button/Button";
 import {Title} from "../Title/Title";
 import {useSelector} from "react-redux";
 import {GameHttpService} from "../../services/gameHttpService";
+import {useNavigate} from "react-router-dom";
+import {Router} from "../../constants/router";
 
 const Panel = ()=>{
     const {game} = useSelector(state => state.gameReducer)
-
+    const navigate = useNavigate()
     const userReady = useMemo(()=>{
         return game?.players.filter(item=>item.player.name === game?.userId)[0].ready
     },[game])
 
-    const [ready, setReady] = useState()
+    const [ready, setReady] = useState(false)
 
     useEffect(() => {
         setReady(userReady)
@@ -23,6 +25,10 @@ const Panel = ()=>{
     const handleReadyToGameOnClick = () =>{
         GameHttpService.readyToGame()
         setReady(true)
+    }
+
+    const handleEndOnClick = ()=>{
+        navigate(Router.ROOT)
     }
 
     const handleHitOnClick = () =>{
@@ -65,7 +71,14 @@ const Panel = ()=>{
                 }
             </div>
             {
-                game?.start
+                game?.gameOver &&
+                <div>
+                    <Button handleOnClick={handleEndOnClick}>Выйти из комнаты</Button>
+                </div>
+            }
+
+            {
+                (game?.start && !game?.gameOver)
                     ?
                     <div>
                         <Button handleOnClick={handleHitOnClick}> Взять карту </Button>

@@ -1,39 +1,49 @@
 import {axiosInstance} from "../http/axiosInstance";
 
 class GameHttpService {
-    static createGame = () =>{
-        return axiosInstance.post('/new-game')
-            .then((response) => {
-                return response.data
-            })
+    static createGame = async () =>{
+        try {
+            const response = await axiosInstance.post('/new-game')
+            return response.data
+        } catch (e) {
+            return e
+        }
     }
 
-    static joinGame = (roomId) =>{
-        return axiosInstance.post('/join-game',{roomId})
-            .then((response)=>{
-                return response.data
-            })
+    static joinGame = async (roomId) =>{
+        try {
+            const response = await axiosInstance.post('/join-game',{roomId})
+            return response.data
+        } catch (e) {
+            return e
+        }
     }
 
-    static readyToGame = () =>{
-        return axiosInstance.post('/ready-to-game')
-            .then((response)=>{
-                return response.data
-            })
+    static readyToGame = async () =>{
+        try {
+            const response = await axiosInstance.post('/ready-to-game')
+            return response.data
+        } catch (e) {
+            return e
+        }
     }
 
-    static getGame = () =>{
-        return axiosInstance.post('/game')
-            .then((response)=>{
-                return response.data
-            })
+    static getGame = async () =>{
+        try {
+            const response = await axiosInstance.post('/game')
+            return response.data
+        } catch (e) {
+            return e
+        }
     }
 
-    static playerTurn = (playerTurn) =>{
-        return axiosInstance.post(`/turn?action=${playerTurn}`)
-            .then((response)=>{
-                return response.data
-            })
+    static playerTurn = async (playerTurn) =>{
+        try {
+            const response = await axiosInstance.post(`/turn?action=${playerTurn}`)
+            return response.data
+        } catch (e) {
+            return e
+        }
     }
 }
 

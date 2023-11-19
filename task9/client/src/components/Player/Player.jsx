@@ -5,7 +5,7 @@ const PlayerItem = ({player}) => {
     return(
         <div className="player">
             <div className="player__title">
-                <h3>Player {player?.player.name}</h3>
+                <h3>Player: {player?.player.name}</h3>
                 {
                     player?.over && // отображаем в случае перебора
                     <p>Перебор</p>
