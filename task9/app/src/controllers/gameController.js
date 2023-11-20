@@ -19,12 +19,11 @@ class GameController {
             const game = new Game(player)
 
             LogService.addLogToGame(game, logsMessages.createdRoom, id )
+
             const newGameResult = await gamesCollection.insertOne(game.getAllProperties())
 
-            // Получаем вставленный идентификатор
             const insertedId = newGameResult.insertedId;
 
-            // Если вы хотите получить полный вставленный документ, вы можете использовать findOne
             const insertedGame = await gamesCollection.findOne({ _id: insertedId });
 
             const token = TokenService.generateToken({ userId: id,  roomId: insertedGame._id })
